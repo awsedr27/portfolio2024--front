@@ -17,7 +17,7 @@ const NaverLogin = () => {
                 try {
                     const response = await axiosInstance.post('/api/user/login/naver', { code,state },{withCredentials:true});
                     const authorizationHeader  = response.headers['authorization'];
-                    if (authorizationHeader ) {
+                    if (authorizationHeader) {
                         const accessToken = authorizationHeader.split('Bearer ')[1];
                         localStorage.setItem('accessToken', accessToken);
                         nav('/main', { replace: true });

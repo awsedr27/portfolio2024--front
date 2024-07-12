@@ -13,6 +13,7 @@ const axiosInstance: AxiosInstance = axios.create({
   timeout:40000
 });
 
+
 // 요청 인터셉터 추가
 axiosInstance.interceptors.request.use(
     (config:InternalAxiosRequestConfig) => {
@@ -38,11 +39,30 @@ axiosInstance.interceptors.request.use(
     (response: AxiosResponse) => {
       return response;
     },
-    (error) => {
-      if (error.response.status === 401) {
-        window.location.replace("/login");
-        return Promise.reject(error);
+    async (error) => {
+      const originalRequest = error.config;
+      if (error.response && error.response.status === 401) {
+        if(originalRequest._retry){
+          window.location.replace("/login");
+          return Promise.reject(error);
+        }
+        originalRequest._retry = true;
+        try {
+          // 리프레시 토큰으로 새로운 액세스 토큰 요청
+          const response = await axiosInstance.post('/api/user/login/refresh', {}, { withCredentials: true });
+          const newAccessToken=response.headers['authorization'];
+          // 새로운 액세스 토큰을 헤더에 설정
+          const accessToken = newAccessToken.split('Bearer ')[1];
+          localStorage.setItem('accessToken', accessToken);  
+          // 원래 요청을 다시 시도
+          return axiosInstance(originalRequest);
+        } catch (refreshError) {
+          return Promise.reject(refreshError);
+        }
+
       }
+
+      return Promise.reject(error);
     }
   );
 export default axiosInstance;
