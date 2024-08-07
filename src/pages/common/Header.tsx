@@ -1,13 +1,28 @@
 // Header.tsx
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './Header.module.css'; 
 
 // FontAwesome 관련 import
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faShoppingCart, faTimes, faBars } from '@fortawesome/free-solid-svg-icons';
+import { useLayoutContext } from '../../context/LayoutContext';
+import axiosInstance from '../../network/Api';
 
 const Header: React.FC = () => {
+  const { cartListCnt,setCartListCnt} = useLayoutContext();
 
+  useEffect(() => {
+    const fetchCartListCount = async () => {
+      try {
+        const response = await axiosInstance.post('/api/cart/list/count');
+        setCartListCnt(response.data);
+      } catch (error) {
+        console.error('Failed to fetch cart list count:', error);
+      }
+    };
+    fetchCartListCount();
+  }, []);
+  
 
   return (
     <header className={styles.header}>
@@ -26,9 +41,9 @@ const Header: React.FC = () => {
           <button>Search</button>
         </div>
         <div className={styles.cart}>
-          <a href="/cart">
+          <a href="/cart/list">
             <FontAwesomeIcon icon={faShoppingCart} />
-            <span className={styles.cartCount}>3</span>
+            <span className={styles.cartCount}>{cartListCnt}</span>
           </a>
         </div>
       </nav>

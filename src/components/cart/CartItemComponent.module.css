@@ -1,0 +1,41 @@
+/* CartItem.module.css */
+.item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .item:last-child {
+    border-bottom: none;
+  }
+  
+  .itemName {
+    font-size: 1.2rem;
+    color: #555;
+  }
+  
+  .itemQuantity,
+  .itemDate {
+    font-size: 1rem;
+    color: #777;
+  }
+  
+
+  
+  .button {
+    padding: 8px 12px;
+    font-size: 1rem;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .button:hover {
+    background-color: #0056b3;
+  }
+  

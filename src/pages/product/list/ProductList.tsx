@@ -1,27 +1,25 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import styles from './Main.module.css';
-import { MainScreenData } from './MainScreenData';
-import { ProductListRequest } from '../data/product/ProductRequest';
-import { ProductListResponse } from '../data/product/ProductResponse';
-import { transformProductListResponse } from '../converter/ProductConverter';
-import axiosInstance from '../network/Api';
-import { useNavigate } from 'react-router-dom';
-import ProductItemComponent from '../components/product/ProductItemComponent';
-import { CartSaveRequest } from '../data/cart/CartRequest';
-import { CartSaveResponse } from '../data/cart/CartResponse';
-import { useLayoutContext } from '../context/LayoutContext';
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { ProductListScreenData } from "./ProductListScreenData";
+import { ProductListRequest } from "../../../data/product/ProductRequest";
+import axiosInstance from "../../../network/Api";
+import { ProductListResponse } from "../../../data/product/ProductResponse";
+import { transformProductListResponse } from "../../../converter/ProductConverter";
+import styles from './ProductList.module.css';
+import ProductItemComponent from "../../../components/product/ProductItemComponent";
 
 
 
-const Main: React.FC = () => {
-  const [mainScreenData, setMainScreenData] = useState<MainScreenData>({productList:[]});
+
+const ProductList: React.FC = () => {
+  const [productListScreenData, setProductListScreenData] = useState<ProductListScreenData>({productList:[]});
   const [loading, setLoading] = useState(false);
-  
+  const { categoryId } = useParams<{ categoryId: string }>();
   const lastProductIdRef = useRef<number | undefined>(undefined);
   const loadingRef = useRef(false);
   const hasMoreRef = useRef(true);
   const nav = useNavigate();
-  const { setCartListCnt } = useLayoutContext();
+
   const fetchProducts = useCallback(async (productListRequest:ProductListRequest) => {
     if(loadingRef.current){return false}
     loadingRef.current=true;
@@ -34,7 +32,7 @@ const Main: React.FC = () => {
       if(productList.length==0){
         hasMoreRef.current=false;
       }
-      setMainScreenData(prevState => ({
+      setProductListScreenData(prevState => ({
         productList: [...prevState.productList, ...productList] 
       }));      
       lastProductIdRef.current = productList[productList.length - 1]?.productId;
@@ -48,39 +46,26 @@ const Main: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    fetchProducts({});
+    fetchProducts({categoryId:Number(categoryId)});
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const handleScroll = useCallback(() => {
     if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 500 && hasMoreRef.current) {
-      fetchProducts({productId:lastProductIdRef.current});
+      fetchProducts({productId:lastProductIdRef.current,categoryId:Number(categoryId)});
     }
   }, []);
   const handleProductClick = (productId: number) => {
     nav(`/product/${productId}`);
   };
-
-  const handleCartSaveIconClick = async (productId: number) => {
-    try{
-      const cartSaveRequest:CartSaveRequest={productId:productId};
-      const response=await axiosInstance.post('/api/cart/save',cartSaveRequest);
-      const resultData:CartSaveResponse = response.data;
-      alert('장바구니에 '+resultData.quantity+'개를 담았습니다');
-      //cartListCnt api 추가 호출 및 state로 리렌더링
-      const cartListCount=await axiosInstance.post('/api/cart/list/count');
-      setCartListCnt(cartListCount.data);
-    }catch(error){
-      console.log(error)
-    }
-
+  const handleCartSaveIconClick = (productId: number) => {
+    alert(productId);
   };
-
   return (
     
     <div className={styles.productList}>
-      {mainScreenData.productList.map(product => (
+      {productListScreenData.productList.map(product => (
         <ProductItemComponent key={product.productId} productItem={product} onClick={handleProductClick} onCartSaveClick={handleCartSaveIconClick}/>
       ))}
     {loading && <p>Loading...</p>}
@@ -88,4 +73,4 @@ const Main: React.FC = () => {
   );
 };
 
-export default Main;
+export default ProductList;

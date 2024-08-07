@@ -23,7 +23,6 @@ axiosInstance.interceptors.request.use(
     // 만약 accessToken이 존재하면 요청 헤더에 추가
     if (accessToken) {
       config.headers.Authorization = `Bearer ${accessToken}`;
-      console.log("요청 헤더 셋팅");
     }
       return config;
     },
