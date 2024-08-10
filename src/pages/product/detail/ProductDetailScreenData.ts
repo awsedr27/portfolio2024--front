@@ -5,4 +5,5 @@ export interface ProductDetailScreenData {
     price:number;
     categoryId:number;
     createDate:Date;
+    caculatedPrice:number;
   }

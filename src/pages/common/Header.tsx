@@ -4,7 +4,7 @@ import styles from './Header.module.css';
 
 // FontAwesome 관련 import
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faShoppingCart, faTimes, faBars } from '@fortawesome/free-solid-svg-icons';
+import { faShoppingCart, faTimes, faBars, faUser } from '@fortawesome/free-solid-svg-icons';
 import { useLayoutContext } from '../../context/LayoutContext';
 import axiosInstance from '../../network/Api';
 
@@ -46,6 +46,12 @@ const Header: React.FC = () => {
             <span className={styles.cartCount}>{cartListCnt}</span>
           </a>
         </div>
+        <div className={styles.user}>
+          <a href="/user/info">
+            <FontAwesomeIcon icon={faUser}/>
+          </a>
+        </div>
+
       </nav>
     </header>
   );

@@ -21,6 +21,7 @@ export const transformProductDetailResponse = (responseData: ProductDetailRespon
         description: responseData.description,
         price: responseData.price,
         categoryId: responseData.categoryId,
-        createDate: new Date(responseData.createDate)
+        createDate: new Date(responseData.createDate),
+        caculatedPrice:responseData.price
       };
 };

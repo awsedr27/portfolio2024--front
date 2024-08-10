@@ -1,41 +1,122 @@
 /* src/ProductDetail.module.css */
 
 .productDetail {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    background-color: #fff;
+  width: 1200px;
+  margin: 0 auto;
+  margin-top:20px;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+  }
+  .productContent{
+    display: flex;
+  }
+  .imgContainer{
+    flex:1;
+  }
+  .contentContainer{
+    flex:1;
+    text-align: left;
   }
   
   .productDetail img {
-    max-width: 100%;
-    height: auto;
+    width: 400px;
+    height: 400px;
     border-radius: 8px;
-    margin-bottom: 20px;
+    /* margin-bottom: 20px; */
   }
   
-  .productDetail h1 {
-    font-size: 2rem;
+  .textContainer h1 {
+    font-size: 1.4rem;
     margin-bottom: 10px;
     color: #333;
   }
   
-  .productDetail p {
+  .textContainer p {
     font-size: 1rem;
     margin-bottom: 10px;
     color: #666;
   }
   
-  .productDetail .price {
+  .textContainer .price {
     font-weight: bold;
     color: #007bff;
   }
   
-  .productDetail .createdDate {
+  .textContainer .createdDate {
     font-style: italic;
     color: #999;
+  }
+  .buttonGroup {
+    display: flex;
+    justify-content: end;
+    margin-top: 40px;
+    min-width: 1200px;
+  }
+  
+  .addToCartButton, .buyNowButton {
+    padding: 10px 20px;
+    font-size: 1rem;
+    border: none;
+    cursor: pointer;
+    height: 3rem;
+  }
+  
+  .addToCartButton {
+    background-color:  #ff0606;
+    color: #fff;
+    width: 250px;
+  }
+  
+  .buyNowButton {
+    background-color:  #000000;
+    color: #fff;
+    width: 150px;
+  }
+  .cartContainer{
+    background-color: rgb(246, 246, 246);
+    padding: 15px 10px 20px 10px;
+  }
+  .cartItemContainer {
+    background-color: white;
+    display: flex;
+    flex-direction: column; 
+    padding: 10px;
+    border: 1px solid #ddd; 
+    
+  }
+  .cartQuantityAndPrice{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .quantityControls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 120px;
+    text-align: center;
+    padding: 2px 5px;
+    border-radius: 17px;
+    border: 1px solid rgb(224, 224, 224);
+    background: rgb(255, 255, 255);
+  }
+  
+  .controlButton {
+    background-color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 16px;
+    margin: 0 5px;
+  }
+  
+  .quantity {
+    font-size: 16px;
+    margin: 0 10px;
+    width: 100%;
   }
   

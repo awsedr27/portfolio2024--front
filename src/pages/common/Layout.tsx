@@ -9,7 +9,7 @@ const Layout: React.FC = () => {
     <LayoutContextProvider>
     <div>
       <Header />
-      <main>
+      <main style={{minHeight:"100vh"}}>
         <Outlet />
       </main>
       <Footer />
