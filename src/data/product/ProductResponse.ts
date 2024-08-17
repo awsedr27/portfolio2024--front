@@ -8,6 +8,7 @@ export interface ProductListResponse{
     description?:string;
     price:number;
     categoryId:number;
+    imageUrl:string;
     createDate:string;
   }
 
@@ -17,6 +18,7 @@ export interface ProductListResponse{
     description?:string;
     price:number;
     categoryId:number;
+    imageUrl:string;
     createDate:string;
   }
   

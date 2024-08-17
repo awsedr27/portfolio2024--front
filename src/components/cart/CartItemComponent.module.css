@@ -1,41 +1,76 @@
 /* CartItem.module.css */
 .item {
-    display: flex;
-    justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  border-bottom: 1px solid #ddd;
+  text-align:center;
+  }
+  .productContents{
+    display:flex;
     align-items: center;
-    padding: 15px;
-    border-bottom: 1px solid #ddd;
   }
-  
-  .item:last-child {
-    border-bottom: none;
-  }
-  
-  .itemName {
-    font-size: 1.2rem;
-    color: #555;
-  }
-  
-  .itemQuantity,
-  .itemDate {
-    font-size: 1rem;
-    color: #777;
-  }
-  
-
-  
-  .button {
-    padding: 8px 12px;
-    font-size: 1rem;
-    color: #fff;
-    background-color: #007bff;
-    border: none;
-    border-radius: 4px;
+  .checkBoxStyle{
+    display: flex;
+    align-items: center;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    font-size: 24px;
+    padding: 1px;
+  }
+  .checked{
+    color:#df0011;
+  }
+  .unchecked{
+    color: white;
+    background-color: silver;
+  }
+  .itemImage{
+    cursor: pointer;
+    width: 90px;
+    height: 90px;
+  }
+  .itemImage img{
+    width: 90px;
+    height: 90px;
+  }
+  .itemContents {
+    text-align:left;
+    cursor: pointer;
+    overflow: hidden;
+    margin-left: 15px;
+  }
+  .itemContents p{
+    white-space: nowrap;     
+    overflow: hidden;        
+    text-overflow: ellipsis;
+  }
+  .itemDescription{
+    color: #888;
+    font-size: 12px;
+  }
+  .itemPrice{
+    /* width:140px; */
+    white-space: nowrap;   
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .quantityControl{
+    display: flex;
+    padding: 2px 5px;
+    border-radius: 17px;
+    border: 1px solid rgb(224, 224, 224);
+    background: rgb(255, 255, 255);
+  }
+  .quantityControl p{
+    flex:1;
+  }
+  .button {
+    flex:1;
+    background-color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 16px;
+    margin: 0 5px;
   }
   
-  .button:hover {
-    background-color: #0056b3;
-  }
   

@@ -19,7 +19,6 @@ const ProductList: React.FC = () => {
   const loadingRef = useRef(false);
   const hasMoreRef = useRef(true);
   const nav = useNavigate();
-
   const fetchProducts = useCallback(async (productListRequest:ProductListRequest) => {
     if(loadingRef.current){return false}
     loadingRef.current=true;

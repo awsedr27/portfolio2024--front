@@ -10,6 +10,7 @@ export const transformProductListResponse = (responseData: ProductListResponse):
         description: item.description,
         price: item.price,
         categoryId: item.categoryId,
+        imageUrl:item.imageUrl,
         createDate: item.createDate,
     }));
 };
@@ -21,6 +22,7 @@ export const transformProductDetailResponse = (responseData: ProductDetailRespon
         description: responseData.description,
         price: responseData.price,
         categoryId: responseData.categoryId,
+        imageUrl:responseData.imageUrl,
         createDate: new Date(responseData.createDate),
         caculatedPrice:responseData.price
       };

@@ -1,31 +1,100 @@
 /* Cart.module.css */
-.container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  .heading {
-    font-size: 2rem;
-    margin-bottom: 20px;
-    text-align: center;
-    color: #333;
-  }
-  .itemActions {
-    display: flex;
-    gap: 10px;
-  }
-  
-  .button {
-    padding: 8px 12px;
-    font-size: 1rem;
-    color: #fff;
-    background-color: #007bff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
+.container{
+  display: flex;
+}
+.cartListContainer {
+  width: 700px;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.heading {
+  font-size: 2rem;
+  margin-bottom: 20px;
+  text-align:left;
+  color: #333;
+}
+.actionsContainer{
+  display: flex;
+  justify-content: right;
+  align-items: center;
+  gap: 13px;
+}
+.header{
+  /* padding: 15px;
+  border-bottom: 1px solid #ddd;
+  text-align: center; */
+}
+
+.actionsContainer p{
+  cursor: pointer;
+}
+table {
+  width: 100%;
+  table-layout: fixed;
+}
+
+.payContainer{
+  flex:1;
+  height: fit-content;
+  position:sticky;
+  top:73px;
+  padding: 20px;
+  margin-left:20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.payContainer span{
+  color:#999;
+}
+.orderPrice{
+  display: flex;
+  justify-content: space-between;
+  padding:20px 0px;
+  border-bottom:1px solid #ddd;
+  flex-wrap: wrap
+}
+.orderPrice p{
+  font-weight: bolder;
+}
+.discountPrice{
+  display: flex;
+  justify-content: space-between;
+  padding:20px 0px;
+  border-bottom:1px solid #ddd;
+}
+.discountPrice p{
+  font-size: 14px;
+  color: #333;
+}
+.deliveryPrice{
+  display: flex;
+  justify-content: space-between;
+  padding:20px 0px;
+  border-bottom:1px solid #ddd;
+}
+.deliveryPrice p{
+  font-size: 14px;
+  color: #333;
+}
+.payPrice p{
+  font-size: 24px;
+  color: #df0011;
+  text-align: right;
+}
+.buyAllButton {
+  background-color:  #ff0606;
+  color: #fff;
+  width: 100%;
+  height: 60px;
+}
+
+.buySelectedButton {
+  background-color:  #000000;
+  color: #fff;
+  width: 100%;
+  height: 60px;
+
+}

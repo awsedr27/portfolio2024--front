@@ -4,6 +4,7 @@ export interface ProductDetailScreenData {
     description?:string;
     price:number;
     categoryId:number;
+    imageUrl:string;
     createDate:Date;
     caculatedPrice:number;
   }

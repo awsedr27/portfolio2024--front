@@ -15,7 +15,8 @@ const ProductDetail: React.FC = () => {
     const [quantity, setQuantity] = useState(1);
     const { productId } = useParams<{ productId: string }>();
     const [productDetail, setProductDetail] = useState<ProductDetailScreenData>();
-   
+    const imgLocation = process.env.REACT_APP_PRODUCT_IMG_LOCATION;
+    const baseUrl = process.env.REACT_APP_API_URL;
     const fetchProductDetail = useCallback(async (productDetailRequest:ProductDetailRequest) => {
         try {
           const response = await axiosInstance.post('/api/product/detail', productDetailRequest);
@@ -56,7 +57,10 @@ const ProductDetail: React.FC = () => {
     <div className={styles.productDetail}>
       <div className={styles.productContent}>
         <div className={styles.imgContainer}>
-          <img src={"../logo192.png"} alt={productDetail.name} />
+          <img 
+            src={productDetail.imageUrl ?`${baseUrl}${imgLocation}${productDetail.imageUrl}` : "../logo192.png"} 
+            alt={productDetail.name} 
+          />
         </div>
         <div className={styles.contentContainer}>
           <div className={styles.textContainer}>
@@ -78,11 +82,11 @@ const ProductDetail: React.FC = () => {
                   <p className={styles.quantity}>{quantity}</p>
                   <button onClick={increaseQuantity} className={styles.controlButton}>+</button>  
                 </div>
-                  <p style={{fontWeight:'bold'}}>{productDetail.caculatedPrice}원</p>
+                  <p style={{fontWeight:'bold'}}>{productDetail.caculatedPrice.toLocaleString('ko-KR')}원</p>
               </div>
               <p style={{fontSize:10}}>최대 50개 구매가능</p>
             </div>
-            <h1 style={{textAlign:'right',color:'rgb(223, 0, 17)'}}>{productDetail.caculatedPrice}원</h1>
+            <h1 style={{textAlign:'right',color:'rgb(223, 0, 17)'}}>{productDetail.caculatedPrice.toLocaleString('ko-KR')}원</h1>
           </div>
         </div>
       </div>

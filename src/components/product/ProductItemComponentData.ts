@@ -4,5 +4,6 @@ export interface ProductItem {
     description?:string;
     price:number;
     categoryId:number;
+    imageUrl:string;
     createDate:string;
   }

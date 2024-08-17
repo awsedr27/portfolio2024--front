@@ -1,8 +1,6 @@
 /* src/ProductDetail.module.css */
 
 .productDetail {
-  width: 1200px;
-  margin: 0 auto;
   margin-top:20px;
   padding: 20px;
   border: 1px solid #ddd;
@@ -15,6 +13,8 @@
   }
   .imgContainer{
     flex:1;
+    text-align: center;
+    margin-top: 15px;
   }
   .contentContainer{
     flex:1;
@@ -53,7 +53,6 @@
     display: flex;
     justify-content: end;
     margin-top: 40px;
-    min-width: 1200px;
   }
   
   .addToCartButton, .buyNowButton {

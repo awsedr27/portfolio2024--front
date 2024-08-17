@@ -1,33 +1,50 @@
 import React, { useState } from 'react';
 import styles from './CartItemComponent.module.css';
 import { CartItem } from './CartItemComponentScreenData';
-
+import { faSquareCheck } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 interface CartItemProps {
     cartItem: CartItem;
     onUpdateQuantity:(productId:number,quantity:number)=>void;
-    onCheckboxChange:(productId:number,isChecked:boolean)=>void;
+    onCheckboxChange:(productId:number)=>void;
+    onClickCart:(productId:number)=>void;
   }
 
 const CartItemComponent: React.FC<CartItemProps> = (props:CartItemProps) => {
 
 
   return (
-    <li className={styles.item}>
-      <input
-        type="checkbox"
-        onChange={(e) => props.onCheckboxChange(props.cartItem.productId,e.target.checked)}
-      />
-      <div className={styles.itemName}>{props.cartItem.productName}</div>
-      <div className={styles.itemQuantity}>Quantity: {props.cartItem.quantity}</div>
-      <div className={styles.itemDate}>
-        Added on: {new Date(props.cartItem.createDate).toLocaleString()}
-      </div>
-      <div className={styles.quantityControls}>
-        <button className={styles.button} onClick={()=>{props.onUpdateQuantity(props.cartItem.productId,props.cartItem.quantity-1)}}>-</button>
-        <span>{props.cartItem.quantity}</span>
-        <button className={styles.button} onClick={()=>{props.onUpdateQuantity(props.cartItem.productId,props.cartItem.quantity+1)}}>+</button>
-      </div>
-    </li>
+    <tr className={styles.item}>
+      <td className={styles.productContents}>
+        <div className={`${styles.checkBoxStyle} ${props.cartItem.checkBox ? styles.checked:styles.unchecked}`}
+        >
+          {/* <input 
+            type="checkbox"
+            checked={props.cartItem.checkBox}
+            onChange={(e) => props.onCheckboxChange(props.cartItem.productId,e.target.checked)}
+          /> */}
+        <FontAwesomeIcon
+          icon={faSquareCheck}
+          onClick={() => props.onCheckboxChange(props.cartItem.productId)}
+          />
+        </div>
+        <div className={styles.itemImage} onClick={()=>{props.onClickCart(props.cartItem.productId)}}><img src="../logo192.png"></img></div>
+        <div className={styles.itemContents} onClick={()=>{props.onClickCart(props.cartItem.productId)}}>
+          <p>{props.cartItem.productName}</p>
+          <p className={styles.itemDescription}>{props.cartItem.description}</p>
+        </div>
+      </td>
+      <td>
+        <div className={styles.itemPrice}>{props.cartItem.price.toLocaleString('ko-KR')}원</div>
+      </td>
+      <td>
+        <div className={styles.quantityControl}>
+          <button className={styles.button} onClick={()=>{props.onUpdateQuantity(props.cartItem.productId,props.cartItem.quantity-1)}}>-</button>
+          <p>{props.cartItem.quantity}</p>
+          <button className={styles.button} onClick={()=>{props.onUpdateQuantity(props.cartItem.productId,props.cartItem.quantity+1)}}>+</button>
+        </div>
+      </td>
+    </tr>
   );
 };
 

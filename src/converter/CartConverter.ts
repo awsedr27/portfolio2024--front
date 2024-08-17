@@ -7,6 +7,9 @@ export const transformCartListResponse = (responseData: CartListResponse): CartL
         checkBox:false,
         productId: item.productId,
         productName: item.productName,
+        description:item.description,
+        productUseYn:item.productUseYn,
+        price:item.price,
         quantity:item.quantity,
         createDate: new Date(item.createDate)
     }));

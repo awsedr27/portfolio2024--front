@@ -7,7 +7,10 @@
   interface CartItemResponse{
     productId:number;
     productName:string;
+    description:string;
+    productUseYn:string;
     quantity:number;
+    price:number;
     createDate:string;
   }
   export interface CartUpdateResponse {

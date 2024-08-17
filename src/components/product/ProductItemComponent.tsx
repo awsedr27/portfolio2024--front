@@ -15,7 +15,8 @@ interface ProductItemProps {
 }
 
 const ProductItemComponent: React.FC<ProductItemProps> = (props:ProductItemProps) => {
-
+  const imgLocation = process.env.REACT_APP_PRODUCT_IMG_LOCATION;
+  const baseUrl = process.env.REACT_APP_API_URL;
   const handleCartClick = (event: React.MouseEvent) => {
     event.stopPropagation(); 
     props.onCartSaveClick(props.productItem.productId);
@@ -23,7 +24,10 @@ const ProductItemComponent: React.FC<ProductItemProps> = (props:ProductItemProps
   return (
     <div className={styles.productItem} onClick={() =>props.onClick(props.productItem.productId)}>
       <div className={styles.imageContainer}>
-        <img src="logo192.png" alt={props.productItem.name} />
+        <img 
+            src={props.productItem.imageUrl ?`${baseUrl}${imgLocation}${props.productItem.imageUrl}` : "logo192.png"} 
+            alt={props.productItem.name} 
+        />
         <FontAwesomeIcon className={styles.cartIcon} icon={faShoppingCart} onClick={handleCartClick}/>
       </div>
       <h3>{props.productItem.name}</h3>
