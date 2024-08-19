@@ -43,7 +43,7 @@ const Header: React.FC = () => {
         <div className={styles.cart}>
           <a href="/cart/list">
             <FontAwesomeIcon icon={faShoppingCart} />
-            <span className={styles.cartCount}>{cartListCnt}</span>
+            <span className={`${styles.cartCount} ${cartListCnt > 0 ? styles.active : styles.inActive}`}></span>
           </a>
         </div>
         <div className={styles.user}>

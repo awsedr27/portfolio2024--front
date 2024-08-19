@@ -16,17 +16,23 @@ const NaverLogin = () => {
             if (code && state && state === savedState) {
                 try {
                     const response = await axiosInstance.post('/api/user/login/naver', { code,state },{withCredentials:true});
-                    const authorizationHeader  = response.headers['authorization'];
+                    if(response.status!==200){
+                        throw new Error("로그인 실패");
+                    }
+                    const authorizationHeader = response.headers['authorization'];
                     if (authorizationHeader) {
                         const accessToken = authorizationHeader.split('Bearer ')[1];
+                        if(!accessToken){
+                            throw new Error("로그인 실패");
+                        }
                         localStorage.setItem('accessToken', accessToken);
-                        nav('/main', { replace: true });
+                        nav('/', { replace: true });
                       } else {
                         alert('Do not found accessToken');
                         nav('/login',{ replace: true });
                       }
                 } catch (error) {
-                    alert('로그인에 실패했습니다. 잠시 후 다시 시도해주세요');
+                    alert('로그인에 실패했습니다. 잠시 후 다시 시도해주세요!');
                     nav('/login',{ replace: true });
                 }
             } else {
