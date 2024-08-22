@@ -6,5 +6,6 @@ export interface CartItem {
     productUseYn:string;
     price:number;
     quantity: number;
+    imageUrl:string;
     createDate: Date;
   }

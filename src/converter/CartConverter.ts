@@ -1,5 +1,6 @@
-import { CartListResponse } from "../data/cart/CartResponse";
+import { CartListForCheckoutResponse, CartListResponse } from "../data/cart/CartResponse";
 import { CartListScreenData } from "../pages/cart/list/CartListScreenData";
+import { OrderDetailScreenData } from "../pages/order/detail/OrderDetailScreenData";
 
 export const transformCartListResponse = (responseData: CartListResponse): CartListScreenData["cartList"] => {
     
@@ -11,6 +12,20 @@ export const transformCartListResponse = (responseData: CartListResponse): CartL
         productUseYn:item.productUseYn,
         price:item.price,
         quantity:item.quantity,
+        imageUrl:item.imageUrl,
+        createDate: new Date(item.createDate)
+    }));
+};
+
+export const transformCartListForCheckoutResponse = (responseData: CartListForCheckoutResponse): OrderDetailScreenData["orderList"] => {
+    return responseData.cartList.map(item => ({
+        productId: item.productId,
+        productName: item.productName,
+        description:item.description,
+        productUseYn:item.productUseYn,
+        price:item.price,
+        quantity:item.quantity,
+        imageUrl:item.imageUrl,
         createDate: new Date(item.createDate)
     }));
 };

@@ -15,6 +15,9 @@
     flex:1;
     text-align: center;
     margin-top: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   .contentContainer{
     flex:1;

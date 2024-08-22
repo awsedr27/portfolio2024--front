@@ -11,24 +11,27 @@ interface CartItemProps {
   }
 
 const CartItemComponent: React.FC<CartItemProps> = (props:CartItemProps) => {
-
+  const imgLocation = process.env.REACT_APP_PRODUCT_IMG_LOCATION;
+  const baseUrl = process.env.REACT_APP_API_URL;
 
   return (
     <tr className={styles.item}>
       <td className={styles.productContents}>
         <div className={`${styles.checkBoxStyle} ${props.cartItem.checkBox ? styles.checked:styles.unchecked}`}
         >
-          {/* <input 
-            type="checkbox"
-            checked={props.cartItem.checkBox}
-            onChange={(e) => props.onCheckboxChange(props.cartItem.productId,e.target.checked)}
-          /> */}
         <FontAwesomeIcon
           icon={faSquareCheck}
           onClick={() => props.onCheckboxChange(props.cartItem.productId)}
           />
         </div>
-        <div className={styles.itemImage} onClick={()=>{props.onClickCart(props.cartItem.productId)}}><img src="../logo192.png"></img></div>
+        <div className={styles.itemImage} onClick={()=>{props.onClickCart(props.cartItem.productId)}}>
+          {/* <img src="../logo192.png"></img> */}
+          {props.cartItem.imageUrl ? (
+            <img src={`${baseUrl}${imgLocation}${props.cartItem.imageUrl}`} alt={props.cartItem.productName} />
+          ) : (
+            <p>이미지없음</p>
+          )}
+        </div>
         <div className={styles.itemContents} onClick={()=>{props.onClickCart(props.cartItem.productId)}}>
           <p>{props.cartItem.productName}</p>
           <p className={styles.itemDescription}>{props.cartItem.description}</p>

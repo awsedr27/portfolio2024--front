@@ -3,7 +3,7 @@ export interface ProductDetailScreenData {
     name:string;
     description?:string;
     price:number;
-    categoryId:number;
+    categoryName:string;
     imageUrl:string;
     createDate:Date;
     caculatedPrice:number;

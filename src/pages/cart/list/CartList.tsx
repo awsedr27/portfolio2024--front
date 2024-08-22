@@ -125,6 +125,30 @@ const Cart: React.FC = () => {
           }))
         }));
       };
+      const handleBuyAll=()=>{
+        const orderList:number[]=[];
+        cartListScreenData.cartList.map(item=>{
+          orderList.push(item.productId);
+        })
+        if(orderList.length==0){
+          alert("장바구니를 추가해주세요");
+          return;
+        }
+        nav('/order/detail', { state: { orderList } });
+      }
+      const handleBuySelected=()=>{
+        const orderList:number[]=[];
+        cartListScreenData.cartList.map(item=>{
+          if (item.checkBox) { 
+            orderList.push(item.productId);
+          }
+        })
+        if(orderList.length==0){
+          alert("구매하실 상품을 선택해주세요");
+          return;
+        }
+        nav('/order/detail', { state: { orderList } });
+      }
   return (
     <div className={styles.container}>
       <div className={styles.cartListContainer}>
@@ -172,8 +196,8 @@ const Cart: React.FC = () => {
           <p>{cartListScreenData.calcuatedPayPrice.toLocaleString('ko-KR')}<span> 원</span></p>
         </div>
         <div className={styles.buttonGroup}>
-          <button className={styles.buyAllButton}>전체상품 구매하기</button>
-          <button className={styles.buySelectedButton}>선택상품 구매하기</button>
+          <button className={styles.buyAllButton} onClick={handleBuyAll}>전체상품 구매하기</button>
+          <button className={styles.buySelectedButton} onClick={handleBuySelected}>선택상품 구매하기</button>
       </div>
       </div>
     </div>

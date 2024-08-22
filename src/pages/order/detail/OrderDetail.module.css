@@ -1,0 +1,147 @@
+.postContainer{
+    margin-top:20px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
+}
+.postInput{
+    border: 1px solid #ccc;
+    margin:5px;
+    padding: 10px;
+    text-align: center;
+}
+.orderContainer{
+    display: flex;
+}
+.orderedProductContainer{
+    flex:0 0 500px;
+    margin-top:20px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+}
+.imageContainer{
+  display: flex;
+  flex-wrap: wrap;
+  gap:10px;
+}
+.imageBox{
+  position:relative;
+  width: 90px;
+  height: 90px;
+}
+.imageContainer img,
+.imageContainer.imgAltText{
+  width: 100%;
+  height: 100%;
+}
+.imageTextContainer{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  font-size: 12px;
+  color: #fff;
+  background: rgba(51, 51, 51, 0.9);
+  border-radius: 3px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.imageTextContainer:hover{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  font-size: 12px;
+  color: #fff;
+  background: rgba(51, 51, 51, 0.9);
+  border-radius: 3px;
+  opacity: 1;
+}
+.imageTextContainer p{
+  margin-left:5px;
+  max-height: 35px;
+  overflow: hidden;
+}
+.imageTextContainer span{
+  text-align: right;
+  margin-right:2px;
+  margin-bottom:2px;
+}
+.orderPayContainer{
+    flex:1;
+    margin-top:20px;
+    height: fit-content;
+    position:sticky;
+    top:73px;
+    padding: 20px;
+    margin-left:20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+  .orderPayContainer span{
+    color:#999;
+  }
+  .orderPrice{
+    display: flex;
+    justify-content: space-between;
+    padding:20px 0px;
+    border-bottom:1px solid #ddd;
+    flex-wrap: wrap
+  }
+  .orderPrice p{
+    font-weight: bolder;
+  }
+  .discountPrice{
+    display: flex;
+    justify-content: space-between;
+    padding:20px 0px;
+    border-bottom:1px solid #ddd;
+  }
+  .discountPrice p{
+    font-size: 14px;
+    color: #333;
+  }
+  .deliveryPrice{
+    display: flex;
+    justify-content: space-between;
+    padding:20px 0px;
+    border-bottom:1px solid #ddd;
+  }
+  .deliveryPrice p{
+    font-size: 14px;
+    color: #333;
+  }
+  .payPrice p{
+    font-size: 24px;
+    color: #df0011;
+    text-align: right;
+  }
+  .orderButton {
+    display: block;
+    width: 100%;
+    height: 60px;
+    margin: 5px 0 0;
+    line-height: 1;
+    font-size: 18px;
+    font-weight: 500;
+    color: #fff;
+    border: 0;
+    background-color: #df0011;
+    cursor: pointer;
+  }

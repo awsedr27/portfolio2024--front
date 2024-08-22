@@ -27,6 +27,10 @@
     cursor: pointer;
     width: 90px;
     height: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 10px;
   }
   .itemImage img{
     width: 90px;
@@ -37,6 +41,7 @@
     cursor: pointer;
     overflow: hidden;
     margin-left: 15px;
+    max-width: 260px;
   }
   .itemContents p{
     white-space: nowrap;     

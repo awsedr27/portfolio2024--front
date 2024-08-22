@@ -68,7 +68,6 @@ const Main: React.FC = () => {
       const response=await axiosInstance.post('/api/cart/save',cartSaveRequest);
       const resultData:CartSaveResponse = response.data;
       alert('장바구니에 '+resultData.quantity+'개를 담았습니다');
-      //cartListCnt api 추가 호출 및 state로 리렌더링
       const cartListCount=await axiosInstance.post('/api/cart/list/count');
       setCartListCnt(cartListCount.data);
     }catch(error){

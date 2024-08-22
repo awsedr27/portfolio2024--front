@@ -1,20 +1,22 @@
 // src/ProductDetail.tsx
 import React, { useCallback, useEffect, useState } from 'react';
 import axiosInstance from '../../../network/Api';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { ProductDetailScreenData } from './ProductDetailScreenData';
 import { ProductDetailRequest } from '../../../data/product/ProductRequest';
 import { ProductDetailResponse } from '../../../data/product/ProductResponse';
 import { transformProductDetailResponse } from '../../../converter/ProductConverter';
 import styles from './ProductDetail.module.css'; 
-
-
-
+import { CartBuyNowRequest, CartSaveRequest } from '../../../data/cart/CartRequest';
+import { CartSaveResponse } from '../../../data/cart/CartResponse';
+import { useLayoutContext } from '../../../context/LayoutContext';
 
 const ProductDetail: React.FC = () => {
     const [quantity, setQuantity] = useState(1);
+    const nav = useNavigate();
     const { productId } = useParams<{ productId: string }>();
     const [productDetail, setProductDetail] = useState<ProductDetailScreenData>();
+    const { setCartListCnt } = useLayoutContext();
     const imgLocation = process.env.REACT_APP_PRODUCT_IMG_LOCATION;
     const baseUrl = process.env.REACT_APP_API_URL;
     const fetchProductDetail = useCallback(async (productDetailRequest:ProductDetailRequest) => {
@@ -42,32 +44,61 @@ const ProductDetail: React.FC = () => {
       };
     })
   }, [quantity]);
-  
-  if (!productDetail) {
-    return <div>Loading...</div>;
-  }
   const increaseQuantity = () => {
-    setQuantity(prevQuantity => (prevQuantity+1 > 50 ? 50 : prevQuantity+1));
+     setQuantity(prevQuantity => (prevQuantity+1 > 50 ? 50 : prevQuantity+1));
   };
 
   const decreaseQuantity = () => {
     setQuantity(prevQuantity => (prevQuantity > 1 ? prevQuantity - 1 : 1));
   };
+  if (!productDetail) {
+    return <div>Loading...</div>;
+  }
+  const handleCartSaveBtnClick = async () => {
+    try{
+      const cartSaveRequest:CartSaveRequest={productId:productDetail.productId,quantity:quantity};
+      const response=await axiosInstance.post('/api/cart/save',cartSaveRequest);
+      const resultData:CartSaveResponse = response.data;
+      alert('장바구니에 '+resultData.quantity+'개를 담았습니다');
+      const cartListCount=await axiosInstance.post('/api/cart/list/count');
+      await fetchProductDetail({productId:Number(productId)});
+      setQuantity(1);
+      setCartListCnt(cartListCount.data);
+    }catch(error){
+      console.log(error)
+    }
+  };
+  const handleBuyNowBtnClick= async()=>{
+    try{
+      const cartBuyNowRequest:CartBuyNowRequest={productId:productDetail.productId,quantity:quantity};
+      const response=await axiosInstance.post('/api/cart/buy-now',cartBuyNowRequest);
+      
+      if(response.status===200){
+        const cartListCount=await axiosInstance.post('/api/cart/list/count');
+        setCartListCnt(cartListCount.data);
+        const orderList:number[]=[productDetail.productId]
+        nav('/order/detail', { state: { orderList } });
+      }
+    }catch(error){
+      console.log(error)
+    }
+  }
   return (
     <div className={styles.productDetail}>
       <div className={styles.productContent}>
         <div className={styles.imgContainer}>
-          <img 
-            src={productDetail.imageUrl ?`${baseUrl}${imgLocation}${productDetail.imageUrl}` : "../logo192.png"} 
-            alt={productDetail.name} 
-          />
+          {productDetail.imageUrl ? (
+            <img src={`${baseUrl}${imgLocation}${productDetail.imageUrl}`} alt={productDetail.name} />
+          ) : (
+            <p>이미지 준비 중</p>
+          )}
         </div>
         <div className={styles.contentContainer}>
           <div className={styles.textContainer}>
             <h1>{productDetail.name}</h1>
             <p>{productDetail.description}</p>
-            <p className={styles.price}>Price: ${productDetail.price}</p>
-            <p>Category ID: {productDetail.categoryId}</p>
+            <p className={styles.price}>{productDetail.price.toLocaleString('ko-KR')}원</p>
+            <p>카테고리 : {productDetail.categoryName}</p>
             <p className={styles.createdDate}>등록일: {new Date(productDetail.createDate).toLocaleDateString()}</p>
           </div>
           <div className={styles.cartContainer}>
@@ -92,8 +123,8 @@ const ProductDetail: React.FC = () => {
       </div>
 
       <div className={styles.buttonGroup}>
-        <button className={styles.buyNowButton}>바로구매</button>
-        <button className={styles.addToCartButton}>장바구니</button>
+        <button className={styles.buyNowButton} onClick={handleBuyNowBtnClick}>바로구매</button>
+        <button className={styles.addToCartButton} onClick={handleCartSaveBtnClick}>장바구니</button>
       </div>
     </div>
   );

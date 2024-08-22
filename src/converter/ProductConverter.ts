@@ -21,7 +21,7 @@ export const transformProductDetailResponse = (responseData: ProductDetailRespon
         name: responseData.name,
         description: responseData.description,
         price: responseData.price,
-        categoryId: responseData.categoryId,
+        categoryName: responseData.categoryName,
         imageUrl:responseData.imageUrl,
         createDate: new Date(responseData.createDate),
         caculatedPrice:responseData.price
