@@ -7,10 +7,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faShoppingCart, faTimes, faBars, faUser } from '@fortawesome/free-solid-svg-icons';
 import { useLayoutContext } from '../../context/LayoutContext';
 import axiosInstance from '../../network/Api';
+import { useNavigate } from 'react-router-dom';
 
 const Header: React.FC = () => {
   const { cartListCnt,setCartListCnt} = useLayoutContext();
-
+  const [text, setText] = useState<string>('');
+  const nav = useNavigate();
   useEffect(() => {
     const fetchCartListCount = async () => {
       try {
@@ -22,7 +24,20 @@ const Header: React.FC = () => {
     };
     fetchCartListCount();
   }, []);
-  
+  const handleChangeText=(event:any)=>{
+      setText(event.target.value);
+  }
+  const handleSearch=()=>{
+    try{
+      if(text.length==0||text.trim()===''){
+        alert('검색어를 입력해주세요');
+        return;
+      }
+      nav("/product/search?keyword="+encodeURIComponent(text));
+    }catch(error){
+      
+    }
+  }
 
   return (
     <header className={styles.header}>
@@ -37,8 +52,8 @@ const Header: React.FC = () => {
           <li><a href="#contact">Contact</a></li>
         </ul>
         <div className={styles.searchBar}>
-          <input type="text" placeholder="Search..." />
-          <button>Search</button>
+          <input type="text" name="productName" placeholder="Search..." value={text} onChange={handleChangeText}/>
+          <button onClick={handleSearch}>Search</button>
         </div>
         <div className={styles.cart}>
           <a href="/cart/list">

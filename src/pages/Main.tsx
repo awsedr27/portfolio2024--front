@@ -5,7 +5,7 @@ import { ProductListRequest } from '../data/product/ProductRequest';
 import { ProductListResponse } from '../data/product/ProductResponse';
 import { transformProductListResponse } from '../converter/ProductConverter';
 import axiosInstance from '../network/Api';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import ProductItemComponent from '../components/product/ProductItemComponent';
 import { CartSaveRequest } from '../data/cart/CartRequest';
 import { CartSaveResponse } from '../data/cart/CartResponse';
@@ -16,7 +16,8 @@ import { useLayoutContext } from '../context/LayoutContext';
 const Main: React.FC = () => {
   const [mainScreenData, setMainScreenData] = useState<MainScreenData>({productList:[]});
   const [loading, setLoading] = useState(false);
-  
+  const { categoryId } = useParams<{ categoryId: string }>();
+  const categoryIdRequest=Number(categoryId)||undefined;
   const lastProductIdRef = useRef<number | undefined>(undefined);
   const loadingRef = useRef(false);
   const hasMoreRef = useRef(true);
@@ -38,7 +39,6 @@ const Main: React.FC = () => {
         productList: [...prevState.productList, ...productList] 
       }));      
       lastProductIdRef.current = productList[productList.length - 1]?.productId;
-
     } catch (error) {
       console.error('Error fetching products:', error);
     } finally {
@@ -48,14 +48,14 @@ const Main: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    fetchProducts({});
+    fetchProducts({categoryId:categoryIdRequest});
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const handleScroll = useCallback(() => {
     if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 500 && hasMoreRef.current) {
-      fetchProducts({productId:lastProductIdRef.current});
+      fetchProducts({productId:lastProductIdRef.current,categoryId:categoryIdRequest});
     }
   }, []);
   const handleProductClick = (productId: number) => {
@@ -73,7 +73,6 @@ const Main: React.FC = () => {
     }catch(error){
       console.log(error)
     }
-
   };
 
   return (

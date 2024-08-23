@@ -3,8 +3,9 @@ import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 // Context의 상태 타입 정의
 interface DataContextType {
-  cartListCnt: any; // 데이터의 타입을 구체적으로 정의할 수 있습니다.
+  cartListCnt: any; 
   setCartListCnt: (data: any) => void;
+
 }
 
 // 기본값을 설정합니다.

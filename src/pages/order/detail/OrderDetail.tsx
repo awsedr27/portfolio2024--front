@@ -16,6 +16,7 @@ const OrderDetail: React.FC = () => {
       calcuatedAllPrice:0,calcuatedPayPrice:0,calcuatedAllDiscountPrice:0,calcuatedAllDeliveryPrice:0
     });
     const [loading, setLoading] = useState(false);
+    const [buy, setBuy] = useState(false);
     const fetchCartData = async () => {
       const cartListForCheckoutRequest:CartListForCheckoutRequest={productIdList:orderListParam};
       const response=await axiosInstance.post('api/cart/list/checkout',cartListForCheckoutRequest);
@@ -57,22 +58,26 @@ const OrderDetail: React.FC = () => {
           console.log('Script not loaded yet.');
           return;
         }
-        new (window as any).daum.Postcode({
-          oncomplete: function (data: any) {
-            const allDeliveryPrice=4000;
-                setOrderDetailScreenData(prev=>{
-                  const updatedPayPrice:number=prev.calcuatedAllPrice-prev.calcuatedAllDiscountPrice+allDeliveryPrice;
-                  return {
-                    ...prev,
-                    postcode:data.zonecode,
-                    roadAddress:data.roadAddress,
-                    jibunAddress:data.jibunAddress,
-                    calcuatedAllDeliveryPrice:allDeliveryPrice,
-                    calcuatedPayPrice:updatedPayPrice
-                  }
-                });
-          }
-        }).open();
+        try{
+          new (window as any).daum.Postcode({
+            oncomplete: function (data: any) {
+              const allDeliveryPrice=4000;
+                  setOrderDetailScreenData(prev=>{
+                    const updatedPayPrice:number=prev.calcuatedAllPrice-prev.calcuatedAllDiscountPrice+allDeliveryPrice;
+                    return {
+                      ...prev,
+                      postcode:data.zonecode,
+                      roadAddress:data.roadAddress,
+                      jibunAddress:data.jibunAddress,
+                      calcuatedAllDeliveryPrice:allDeliveryPrice,
+                      calcuatedPayPrice:updatedPayPrice
+                    }
+                  });
+            }
+          }).open();
+        }catch(error){
+          console.log("주소찾기api 오류");
+        }
       };
       const handleInputDetailAddress = (event:any) => {
         setOrderDetailScreenData(prev=>{
@@ -82,7 +87,8 @@ const OrderDetail: React.FC = () => {
           }
         });
       }
-      const handleBuy=()=>{
+      const handleBuy=async ()=>{
+        
       }
     return(
         <div>
@@ -133,7 +139,7 @@ const OrderDetail: React.FC = () => {
                     <p>{orderDetailScreenData.calcuatedPayPrice.toLocaleString('ko-KR')}<span> 원</span></p>
                     </div>
                     <div className={styles.buttonGroup}>
-                    <button className={styles.orderButton} onClick={handleBuy}>주문하기</button>
+                    <button className={styles.orderButton} onClick={handleBuy} disabled={buy}>주문하기</button>
                     </div>
                 </div>
             </div>
