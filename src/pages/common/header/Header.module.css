@@ -60,6 +60,7 @@
 
 .searchBar input {
   padding: 5px 0px;
+  padding-left: 3px;
   border: none;
   border-radius: 4px;
   width: 200px;

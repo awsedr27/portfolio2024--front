@@ -1,5 +1,5 @@
-export interface OrderDetailScreenData{
-    orderList:orderItem[];
+export interface OrderCheckoutScreenData{
+    orderList:OrderCheckoutItem[];
     calcuatedAllPrice:number;
     calcuatedAllDiscountPrice:number;
     calcuatedAllDeliveryPrice:number;
@@ -9,7 +9,7 @@ export interface OrderDetailScreenData{
     jibunAddress: string;
     detailAddress: string;
 }
-interface orderItem{
+export interface OrderCheckoutItem{
     productId: number;
     productName: string;
     description:string;

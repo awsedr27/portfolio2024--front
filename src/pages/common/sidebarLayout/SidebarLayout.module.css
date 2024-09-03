@@ -1,0 +1,8 @@
+  .content{
+    display: flex;
+  }
+  .mainStyle{
+    flex:0 0 740px;
+    overflow: hidden;
+  }
+  

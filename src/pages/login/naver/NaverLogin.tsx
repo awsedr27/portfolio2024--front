@@ -4,7 +4,6 @@ import axiosInstance from '../../../network/Api';
 
 const NaverLogin = () => {
     const location = useLocation();
-    const nav = useNavigate();
 
     useEffect(() => {
         async function loginLogic() {
@@ -26,18 +25,18 @@ const NaverLogin = () => {
                             throw new Error("로그인 실패");
                         }
                         localStorage.setItem('accessToken', accessToken);
-                        nav('/', { replace: true });
+                        window.location.replace("/");
                       } else {
                         alert('Do not found accessToken');
-                        nav('/login',{ replace: true });
+                        window.location.replace("/login");
                       }
                 } catch (error) {
                     alert('로그인에 실패했습니다. 잠시 후 다시 시도해주세요!');
-                    nav('/login',{ replace: true });
+                    window.location.replace("/login");
                 }
             } else {
                 alert('Invalid state token');
-                nav('/login',{ replace: true });
+                window.location.replace("/login");
             }
         }
         loginLogic();

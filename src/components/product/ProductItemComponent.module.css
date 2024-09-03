@@ -44,16 +44,28 @@
     font-size: 1.2rem;
     margin: 16px;
     color: #333;
+    white-space: nowrap;     
+    overflow: hidden;        
+    text-overflow: ellipsis;
+
   }
   
   .productItem p {
     font-size: 1rem;
     margin: 0 16px 16px;
     color: #666;
+    white-space: nowrap;     
+    overflow: hidden;        
+    text-overflow: ellipsis;
+
   }
   
   .productItem .price {
     font-weight: bold;
     margin: 0 16px 16px;
     color: #e91e63;
+    white-space: nowrap;     
+    overflow: hidden;        
+    text-overflow: ellipsis;
+
   }

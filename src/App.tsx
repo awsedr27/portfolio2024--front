@@ -3,12 +3,16 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Login from './pages/login/Login';
 import NaverLogin from './pages/login/naver/NaverLogin';
 import Main from './pages/Main';
-import Layout from './pages/common/Layout';
+import Layout from './pages/common/layout/Layout';
 import ProductDetail from './pages/product/detail/ProductDetail';
 import ProductList from './pages/product/list/ProductList';
 import CartList from './pages/cart/list/CartList';
-import OrderDetail from './pages/order/detail/OrderDetail';
-import ErrorPage from './pages/common/ErrorPage';
+import OrderCheckout from './pages/order/checkout/OrderCheckout';
+import ErrorPage from './pages/common/errorPage/ErrorPage';
+import SidebarLayout from './pages/common/sidebarLayout/SidebarLayout';
+import UserInfo from './pages/myPage/userInfo/UserInfo';
+import MyPageReviewList from './pages/myPage/review/list/MyPageReviewList';
+import ReviewDetail from './pages/myPage/review/detail/ReviewDetail';
 
 function App() {
 
@@ -23,8 +27,13 @@ function App() {
           <Route path="/product/search" element={<ProductList/>} />
           <Route path="/product/:productId" element={<ProductDetail/>} />
           <Route path="/cart/list" element={<CartList/>} />
-          <Route path="/order/detail" element={<OrderDetail/>}/>
+          <Route path="/order/checkout" element={<OrderCheckout/>}/>
           <Route path="/errorPage" element={<ErrorPage/>}/>
+          <Route path="/myPage" element={<SidebarLayout />}>
+            <Route index element={<UserInfo/>} />
+            <Route path="review/list" element={<MyPageReviewList/>} />
+            <Route path="review/detail" element={<ReviewDetail/>} />
+          </Route>
         </Route>
       </Routes>
     </Router>

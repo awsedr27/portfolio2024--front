@@ -24,10 +24,10 @@ const Main: React.FC = () => {
   const nav = useNavigate();
   const { setCartListCnt } = useLayoutContext();
   const fetchProducts = useCallback(async (productListRequest:ProductListRequest) => {
-    if(loadingRef.current){return false}
+    if(loadingRef.current){
+      return false}
     loadingRef.current=true;
     setLoading(true);
-
     try {
       const response = await axiosInstance.post('/api/product/list', productListRequest);
       const resultData:ProductListResponse = response.data;
@@ -37,7 +37,7 @@ const Main: React.FC = () => {
       }
       setMainScreenData(prevState => ({
         productList: [...prevState.productList, ...productList] 
-      }));      
+      }));    
       lastProductIdRef.current = productList[productList.length - 1]?.productId;
     } catch (error) {
       console.error('Error fetching products:', error);
@@ -48,6 +48,7 @@ const Main: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    window.scrollTo(0, 0);
     fetchProducts({categoryId:categoryIdRequest});
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);

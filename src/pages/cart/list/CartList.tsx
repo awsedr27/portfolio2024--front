@@ -19,6 +19,7 @@ const Cart: React.FC = () => {
       calcuatedAllDeliveryPrice:0,calcuatedAllDiscountPrice:0,calcuatedPayPrice:0});
 
     useEffect(() => {
+        window.scrollTo(0, 0);
         fetchCartList();
       }, []);
       const fetchCartList = async () => {
@@ -134,7 +135,7 @@ const Cart: React.FC = () => {
           alert("장바구니를 추가해주세요");
           return;
         }
-        nav('/order/detail', { state: { orderList } });
+        nav('/order/checkout', { state: { orderList } });
       }
       const handleBuySelected=()=>{
         const orderList:number[]=[];
@@ -147,7 +148,7 @@ const Cart: React.FC = () => {
           alert("구매하실 상품을 선택해주세요");
           return;
         }
-        nav('/order/detail', { state: { orderList } });
+        nav('/order/checkout', { state: { orderList } });
       }
   return (
     <div className={styles.container}>

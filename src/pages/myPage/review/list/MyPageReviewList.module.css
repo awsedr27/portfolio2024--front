@@ -1,0 +1,111 @@
+.headerTitle{
+    margin-bottom: 50px;
+    margin-top: 50px;
+}
+.myPageReviewListContainer{
+}
+.noReviewList,
+.loadingContainer{
+    display: flex;
+    justify-content: center;
+}
+.reviewListContainer{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.tabButtonContainer{
+    display: flex;
+    margin-bottom:15px;
+}
+.tabButtonContainer button{
+    flex:1;
+    border: none;
+    background-color: white;
+    cursor: pointer;
+    height: 35px;
+}
+.tabButtonContainer .active{
+    color: rgb(223, 0, 17);
+    font-weight: bold;
+    border-bottom: solid 2px;
+    margin-bottom: 15px;
+}
+.reviewListBox{
+    padding-bottom: 15px;
+    cursor: pointer;
+    border-bottom:1px solid #ddd;
+
+}
+.dateAndPriceContainer{
+    display: flex;
+    justify-content: space-between;
+}
+.createDate{
+    font-weight: 500;
+    font-size: 20px;
+}
+.price{
+    font-size: 15px;
+}
+.content{
+    display: flex;
+}
+.imgContainer{
+    width: 90px;
+    height: 90px;
+    border: solid 1px #dbd7d7;
+}
+.imgContainer p{
+    text-align: center;
+}
+.imgContainer img{
+    width: 90px;
+    height: 90px;
+}
+.productNameAndInformation{
+    margin-left: 10px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.productName{
+    font-size: 22px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.information{
+    font-size: 18px;
+}
+.addButton{
+    margin-top:15px
+}
+.addButton button{
+    display: block;
+    width: 100%;
+    height: 48px;
+    border: 1px solid rgb(102, 102, 102);
+    border-radius: 6px;
+    background: none;
+    cursor: pointer;
+}
+.starAndName{
+    display: flex;
+    justify-content: space-between;
+}
+.reviewComment{
+    padding-bottom: 15px;
+    border-bottom:solid 1px black
+}
+.reviewDetailButtonContainer{
+    text-align: right
+}
+.reviewDetailButtonContainer button{
+    border: none;
+    background: white;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 900;
+}

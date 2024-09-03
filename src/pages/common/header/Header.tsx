@@ -1,18 +1,17 @@
-// Header.tsx
+
 import React, { useEffect, useState } from 'react';
 import styles from './Header.module.css'; 
-
-// FontAwesome 관련 import
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faShoppingCart, faTimes, faBars, faUser } from '@fortawesome/free-solid-svg-icons';
-import { useLayoutContext } from '../../context/LayoutContext';
-import axiosInstance from '../../network/Api';
-import { useNavigate } from 'react-router-dom';
+import { useLayoutContext } from '../../../context/LayoutContext';
+import axiosInstance from '../../../network/Api';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 const Header: React.FC = () => {
   const { cartListCnt,setCartListCnt} = useLayoutContext();
   const [text, setText] = useState<string>('');
   const nav = useNavigate();
+  const location = useLocation();
   useEffect(() => {
     const fetchCartListCount = async () => {
       try {
@@ -24,16 +23,24 @@ const Header: React.FC = () => {
     };
     fetchCartListCount();
   }, []);
+  useEffect(() => {
+    if (!location.pathname.startsWith('/product/search')) {
+      setText('');
+    }
+  }, [location.pathname]);
+
   const handleChangeText=(event:any)=>{
       setText(event.target.value);
   }
-  const handleSearch=()=>{
+  const handleSearch=(e:any)=>{
     try{
+      e.preventDefault();
       if(text.length==0||text.trim()===''){
         alert('검색어를 입력해주세요');
         return;
       }
       nav("/product/search?keyword="+encodeURIComponent(text));
+      
     }catch(error){
       
     }
@@ -42,29 +49,30 @@ const Header: React.FC = () => {
   return (
     <header className={styles.header}>
       <div className={styles.logo}>
-        <a href="/">PortFolio</a>
+        <Link to="/">PortFolio</Link>
       </div>
       <nav className={`${styles.navbar}`}>
         <ul className={styles.navLinks}>
-          <li><a href="#home">Top50</a></li>
-          <li><a href="#products">신제품</a></li>
-          <li><a href="#about">About Us</a></li>
-          <li><a href="#contact">Contact</a></li>
+          <li><Link to="#contact">카테고리</Link></li>
+          <li><Link to="#home">Top50</Link></li>
+          <li><Link to="#products">신제품</Link></li>
         </ul>
         <div className={styles.searchBar}>
+          <form onSubmit={handleSearch}>
           <input type="text" name="productName" placeholder="Search..." value={text} onChange={handleChangeText}/>
-          <button onClick={handleSearch}>Search</button>
+          <button type='submit'>Search</button>
+          </form>
         </div>
         <div className={styles.cart}>
-          <a href="/cart/list">
+          <Link to="/cart/list">
             <FontAwesomeIcon icon={faShoppingCart} />
             <span className={`${styles.cartCount} ${cartListCnt > 0 ? styles.active : styles.inActive}`}>{cartListCnt}</span>
-          </a>
+          </Link>
         </div>
         <div className={styles.user}>
-          <a href="/user/info">
+          <Link to="/myPage">
             <FontAwesomeIcon icon={faUser}/>
-          </a>
+          </Link>
         </div>
 
       </nav>

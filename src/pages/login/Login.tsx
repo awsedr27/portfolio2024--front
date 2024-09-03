@@ -1,4 +1,5 @@
-const Login = () => {
+import styles from './Login.module.css';
+const Login: React.FC = () => {
     const clientId = process.env.REACT_APP_NAVER_LOGIN_CLIENT_ID;
     const redirectUri = process.env.REACT_APP_NAVER_LOGIN_REDIRECT_URL;
     
@@ -17,9 +18,41 @@ const Login = () => {
     };
 
     return (
-        <button onClick={naverLogin}>
-            네이버 로그인
-        </button>
+        <div className={styles.container}>
+            <div className={styles.loginContainer}>
+                <div className={styles.logo}>
+                    <a href="/">PortFolio</a>
+                </div>
+                <div className={styles.loginBox}>
+                    <div className={styles.btnContainer}>
+                        <button onClick={naverLogin} className={styles.naverBtn}>
+                            <img src={'../btnG_login.png'}/>
+                            <p>네이버로 시작하기</p>
+                        </button>
+                    </div>
+                    <div className={styles.btnContainer}>
+                        <button onClick={naverLogin} className={styles.gBtn}>
+                            <h3>G</h3>
+                            <p>Guest1로 시작하기</p>
+                        </button>
+                    </div>
+                    <div className={styles.btnContainer}>
+                        <button onClick={naverLogin} className={styles.gBtn}>
+                            <h3>G</h3>
+                            <p>Guest2로 시작하기</p>
+                        </button>
+                    </div>
+                </div>
+                <div className={styles.textContainer}>
+                    <p>개인프로젝트 웹서비스입니다</p>
+                    <p>This is a personal project web service</p>
+                    <p>게스트로 시작하기를 이용해주세요</p>
+                </div>
+            </div>
+            <footer className={styles.footer}>
+                <p>&copy; CopyRight 2024. portfolio by kim All rights reserved.</p>
+            </footer>
+        </div>
     );
 };
 

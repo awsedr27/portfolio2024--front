@@ -1,10 +1,11 @@
 import React from 'react';
 import styles from './ErrorPage.module.css';
+import { useNavigate } from 'react-router-dom';
 
 const ErrorPage: React.FC = () => {
-
+  const nav = useNavigate();
   const handleGoToMain=()=>{
-
+    nav('/', { replace: true });
   }
   return (
     <div className={styles.errorContainer}>

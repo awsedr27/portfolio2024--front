@@ -1,8 +1,8 @@
 // src/ProductDetail.tsx
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import axiosInstance from '../../../network/Api';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ProductDetailScreenData } from './ProductDetailScreenData';
+import { ProductDetailScreenData, ReviewListWithCount } from './ProductDetailScreenData';
 import { ProductDetailRequest } from '../../../data/product/ProductRequest';
 import { ProductDetailResponse } from '../../../data/product/ProductResponse';
 import { transformProductDetailResponse } from '../../../converter/ProductConverter';
@@ -10,28 +10,80 @@ import styles from './ProductDetail.module.css';
 import { CartBuyNowRequest, CartSaveRequest } from '../../../data/cart/CartRequest';
 import { CartSaveResponse } from '../../../data/cart/CartResponse';
 import { useLayoutContext } from '../../../context/LayoutContext';
+import ReviewItemComponent from '../../../components/review/ReviewItemComponent';
+import { ReviewListRequest } from '../../../data/review/ReviewRequest';
+import { ReviewListResponse } from '../../../data/review/ReviewResponse';
+import { transformReviewListResponse } from '../../../converter/ReviewConverter';
 
 const ProductDetail: React.FC = () => {
     const [quantity, setQuantity] = useState(1);
     const nav = useNavigate();
     const { productId } = useParams<{ productId: string }>();
     const [productDetail, setProductDetail] = useState<ProductDetailScreenData>();
+    const [reviewListWithCount, setReviewListWithCount] = useState<ReviewListWithCount>({reviewList:[],reviewCnt:0});
+    const lastReviewIdRef = useRef<number | undefined>(undefined);
+    const lastReviewRatingRef = useRef<number | undefined>(undefined);
+    const reviewLoadingRef = useRef(false);
+    const reviewHasMoreRef = useRef(true);
+    const [reviewHasMore, setReviewHasMore] = useState(true);
+    const [reviewLoading, setReviewLoading] = useState(false);
+
+    const [reviewSortBy, setReviewSortBy] = useState('LATEST');
     const { setCartListCnt } = useLayoutContext();
     const imgLocation = process.env.REACT_APP_PRODUCT_IMG_LOCATION;
     const baseUrl = process.env.REACT_APP_API_URL;
-    const fetchProductDetail = useCallback(async (productDetailRequest:ProductDetailRequest) => {
+
+    const init = useCallback(async () => {
+      const productDetail=await getProductDetail({productId:Number(productId)});
+      const reviewListWithCount=await getReviewListWithCount({productId:Number(productId),sortBy:"LATEST"});
+      setProductDetail(productDetail);
+      if(reviewListWithCount){
+        setReviewListWithCount(prevState => ({
+          reviewList:reviewListWithCount.reviewList,
+          reviewCnt:reviewListWithCount.reviewCnt
+        }));
+      }
+    }, []);
+
+    const getProductDetail = useCallback(async (productDetailRequest:ProductDetailRequest) => {
         try {
           const response = await axiosInstance.post('/api/product/detail', productDetailRequest);
           const resultData:ProductDetailResponse = response.data;
           const productDetail=transformProductDetailResponse(resultData);
-          setProductDetail(productDetail);
+          return productDetail;
         } catch (error) {
-          console.error('Error fetching productDetail:', error);
+          nav('/errorPage',{ replace: true });
+          return;
         }
       }, []);
+      const getReviewListWithCount = useCallback(async (reviewListRequest:ReviewListRequest) => {
+        try {
+          if(reviewLoadingRef.current){return null;}
+          reviewLoadingRef.current=true;
+          setReviewLoading(true);
+          const response = await axiosInstance.post('/api/review/list', reviewListRequest);
+          const resultData:ReviewListResponse = response.data;
+          const reviewList=transformReviewListResponse(resultData);
+          const reviewCnt:number=resultData.reviewCnt;
+          if(reviewList.length==0){
+            reviewHasMoreRef.current=false;
+            setReviewHasMore(false);
+          }
+          lastReviewIdRef.current = reviewList[reviewList.length - 1]?.reviewId;
+          lastReviewRatingRef.current = reviewList[reviewList.length - 1]?.rating;
+          return {reviewList,reviewCnt};
+        } catch (error) {
+          nav('/errorPage',{ replace: true });
+          return null;
+        }finally {
+          reviewLoadingRef.current = false;
+          setReviewLoading(false);
+      }
+      }, []);
   useEffect(() => {
-    fetchProductDetail({productId:Number(productId)});
-  }, []);
+    window.scrollTo(0, 0);
+    init();
+    }, []);
   
   useEffect(() => {
     setProductDetail(prevProduct => {
@@ -44,6 +96,9 @@ const ProductDetail: React.FC = () => {
       };
     })
   }, [quantity]);
+  if (!productDetail) {
+    return <div>Loading...</div>;
+  }
   const increaseQuantity = () => {
      setQuantity(prevQuantity => (prevQuantity+1 > 50 ? 50 : prevQuantity+1));
   };
@@ -51,19 +106,16 @@ const ProductDetail: React.FC = () => {
   const decreaseQuantity = () => {
     setQuantity(prevQuantity => (prevQuantity > 1 ? prevQuantity - 1 : 1));
   };
-  if (!productDetail) {
-    return <div>Loading...</div>;
-  }
   const handleCartSaveBtnClick = async () => {
     try{
       const cartSaveRequest:CartSaveRequest={productId:productDetail.productId,quantity:quantity};
       const response=await axiosInstance.post('/api/cart/save',cartSaveRequest);
       const resultData:CartSaveResponse = response.data;
-      alert('장바구니에 '+resultData.quantity+'개를 담았습니다');
       const cartListCount=await axiosInstance.post('/api/cart/list/count');
-      await fetchProductDetail({productId:Number(productId)});
-      setQuantity(1);
       setCartListCnt(cartListCount.data);
+      alert('장바구니에 '+resultData.quantity+'개를 담았습니다');
+      nav('/',{ replace: true });
+      return;
     }catch(error){
       console.log(error)
     }
@@ -77,12 +129,37 @@ const ProductDetail: React.FC = () => {
         const cartListCount=await axiosInstance.post('/api/cart/list/count');
         setCartListCnt(cartListCount.data);
         const orderList:number[]=[productDetail.productId]
-        nav('/order/detail', { state: { orderList } });
+        nav('/order/checkout', { state: { orderList } });
       }
     }catch(error){
       console.log(error)
     }
   }
+  const handleChangeReviewSoryBy=async (event:any)=>{
+    reviewHasMoreRef.current=true
+    setReviewHasMore(true);
+    const reviewListWithCount=await getReviewListWithCount({productId:Number(productId),sortBy:String(event.target.value)});
+    if(reviewListWithCount){
+      setReviewListWithCount({reviewList:reviewListWithCount.reviewList,reviewCnt:reviewListWithCount.reviewCnt});
+    }
+    setReviewSortBy(event.target.value);
+  }
+  const handleClickReviewLoadMoreBtn=async ()=>{
+    if(!reviewHasMoreRef.current){
+      return;
+    }
+      const reviewListWithCount=await getReviewListWithCount({productId:Number(productId),sortBy:reviewSortBy,reviewId:lastReviewIdRef.current,rating:lastReviewRatingRef.current});
+      if(reviewListWithCount){
+        setReviewListWithCount(prev=>{
+          return {
+            reviewCnt:reviewListWithCount.reviewCnt,
+            reviewList:[...prev.reviewList,...reviewListWithCount.reviewList]
+          }
+        })
+      }
+
+    }
+
   return (
     <div className={styles.productDetail}>
       <div className={styles.productContent}>
@@ -121,10 +198,32 @@ const ProductDetail: React.FC = () => {
           </div>
         </div>
       </div>
-
-      <div className={styles.buttonGroup}>
-        <button className={styles.buyNowButton} onClick={handleBuyNowBtnClick}>바로구매</button>
-        <button className={styles.addToCartButton} onClick={handleCartSaveBtnClick}>장바구니</button>
+      <div className={styles.reviewAndBtnContainer}>
+        <div className={styles.reviewContainer}>
+          <h3>전체 리뷰 {reviewListWithCount.reviewCnt}건</h3>
+          <div className={styles.reviewSortBySelectBox}>
+            <select className={styles.reviewSelector} onChange={handleChangeReviewSoryBy}>
+              <option value="LATEST">--최신등록순--</option>
+              <option value="OLDEST">오래된순</option>
+              <option value="HIGHRATING">별점높은순</option>
+              <option value="LOWRATING">별점낮은순</option>
+            </select>
+          </div>
+          <div className={styles.reviewList}>
+          {reviewListWithCount.reviewList.map((item,index) => (
+            <ReviewItemComponent key={index} reviewItem={item}></ReviewItemComponent>      
+            ))}
+            {reviewHasMore && (
+              <button onClick={handleClickReviewLoadMoreBtn} disabled={reviewLoading}>
+                {reviewLoading ? '로딩 중...' : '더보기'}
+              </button>
+            )}
+          </div>
+        </div>
+        <div className={styles.buttonGroup}>
+          <button className={styles.buyNowButton} onClick={handleBuyNowBtnClick}>바로구매</button>
+          <button className={styles.addToCartButton} onClick={handleCartSaveBtnClick}>장바구니</button>
+        </div>
       </div>
     </div>
   );

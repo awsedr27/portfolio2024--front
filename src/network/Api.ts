@@ -55,16 +55,13 @@ axiosInstance.interceptors.request.use(
             throw new Error("새로운 액세스 토큰을 받아오지 못했습니다.");
           }
           localStorage.setItem('accessToken', accessToken);  
-
           return axiosInstance(originalRequest);
         } catch (refreshError) {
           localStorage.removeItem('accessToken');
           window.location.replace("/login");
           return Promise.reject(refreshError);
         }
-
       }
-
       return Promise.reject(error);
     }
   );
