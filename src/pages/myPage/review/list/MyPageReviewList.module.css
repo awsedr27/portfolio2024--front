@@ -33,7 +33,6 @@
 }
 .reviewListBox{
     padding-bottom: 15px;
-    cursor: pointer;
     border-bottom:1px solid #ddd;
 
 }
@@ -78,6 +77,10 @@
 }
 .information{
     font-size: 18px;
+    cursor: pointer; 
+}
+.information span{
+    margin-left:10px
 }
 .addButton{
     margin-top:15px
@@ -103,9 +106,19 @@
     text-align: right
 }
 .reviewDetailButtonContainer button{
-    border: none;
+    border: solid 1px black;
     background: white;
     cursor: pointer;
     font-size: 13px;
     font-weight: 900;
+}
+.reviewDetails{
+
+}
+.reviewNotUsed{
+    text-align:center;
+}
+.reviewActions{
+    text-align:center;
+    cursor:pointer;
 }

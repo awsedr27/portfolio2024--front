@@ -1,7 +1,7 @@
 export interface MyPageReviewListScreenData {
     myPageReviewList:MyPageReviewItem[]
 }
-interface MyPageReviewItem{
+export interface MyPageReviewItem{
     imageUrl: string; 
     productName: string; 
     quantity: number; 

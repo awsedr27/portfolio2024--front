@@ -2,11 +2,13 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import styles from './MyPageReviewList.module.css'; 
 import { useEffect, useRef, useState } from 'react';
 import axiosInstance from '../../../../network/Api';
-import { MyPageReviewListScreenData } from './MyPageReviewListScreenData';
+import { MyPageReviewItem, MyPageReviewListScreenData } from './MyPageReviewListScreenData';
 import { MyPageReviewListRequest } from '../../../../data/order/OrderRequest';
 import { MyPageReviewListResponse } from '../../../../data/order/OrderResponse';
 import { transformMyPageReviewListResponseToMyPageReviewListScreenData } from '../../../../converter/OrderConverter';
 import { MyPageReviewDetail } from '../detail/ReviewDetailScreenData';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 const MyPageReviewList: React.FC = () => {
     const nav = useNavigate();
     const location = useLocation();
@@ -79,12 +81,12 @@ const MyPageReviewList: React.FC = () => {
             setLoading(false);
         }
     }
-    const handleToggle = (orderItemId:number,reviewDetail:MyPageReviewDetail) => {
-        if(!reviewDetail.reviewId){
-            nav('/myPage/review/detail', { state: {orderItemId:orderItemId,reviewDetail:reviewDetail} });
+    const handleToggle = (reviewItem:MyPageReviewItem) => {
+        if(reviewItem.reviewId==null){
+            nav('/myPage/review/detail', { state: {reviewItem:reviewItem} });
             return;
         }else{
-            setExpandedReviewId(prevId => prevId === orderItemId ? null : orderItemId); 
+            setExpandedReviewId(prevId => prevId === reviewItem.orderItemId ? null : reviewItem.orderItemId); 
             return;
         }
       };
@@ -95,8 +97,8 @@ const MyPageReviewList: React.FC = () => {
           </span>
         );
       }
-    const handleClickReview=(orderItemId:number,reviewDetail:MyPageReviewDetail)=>{
-        nav('/myPage/review/detail', { state: {orderItemId:orderItemId,reviewDetail:reviewDetail} });
+    const handleClickReview=(reviewItem:MyPageReviewItem)=>{
+        nav('/myPage/review/detail', { state: {reviewItem:reviewItem} });
     }
    return(
         <div className={styles.myPageReviewListContainer}>
@@ -119,10 +121,7 @@ const MyPageReviewList: React.FC = () => {
             ) : (
                 <div className={styles.reviewListContainer}>
                     {myPageReviewList.myPageReviewList.map((review) => (
-                        <div className={styles.reviewListBox} key={review.orderItemId} onClick={() => handleToggle(review.orderItemId,
-                            {reviewId:review.reviewId,reviewComment:review.reviewComment,reviewReply:review.reviewReply,reviewRating:review.reviewRating,reviewUseYn:review.reviewUseYn}
-                        )}
->
+                        <div className={styles.reviewListBox} key={review.orderItemId}>
                           <div className={styles.dateAndPriceContainer}>
                             <div className={styles.createDate}>{review.orderItemCreateData.toLocaleDateString()}</div>
                             <div className={styles.price}>{review.price.toLocaleString('ko-KR')}원</div>
@@ -137,17 +136,20 @@ const MyPageReviewList: React.FC = () => {
                             </div>
                             <div className={styles.productNameAndInformation}>
                                 <div className={styles.productName}>{review.productName}</div>
-                                <div className={styles.information}>
+                                <div className={styles.information} onClick={() => handleToggle(review)}>
                                 {type==='REVIEWABLE'&&'리뷰를 작성하시려면 클릭하세요'}
-                                {(type==='REVIEWED'&&(expandedReviewId !== review.orderItemId))&&'리뷰를 보시려면 클릭하세요'}
+                                {(type==='REVIEWED'&&(expandedReviewId !== review.orderItemId))&&
+                                (<div><FontAwesomeIcon icon={faChevronDown}/><span>리뷰를 보시려면 클릭하세요</span></div>)
+                                }
                                 </div>
                             </div>
                           </div>
-                          {(expandedReviewId === review.orderItemId)&&review.reviewId&& (
+                          {(expandedReviewId === review.orderItemId)&&(review.reviewId!=null)&& (
                             <div className={styles.reviewDetails}>
+                            {(review.reviewUseYn) === 'Y' && (
+                                <>
                                 <div className={styles.reviewDetailButtonContainer}>
-                                    <button onClick={(e) => { e.stopPropagation();handleClickReview(review.orderItemId,
-                                        {reviewId:review.reviewId,reviewComment:review.reviewComment,reviewReply:review.reviewReply,reviewRating:review.reviewRating,reviewUseYn:review.reviewUseYn}) }}>상세보기</button>
+                                    <button onClick={(e) => { e.stopPropagation();handleClickReview(review) }}>상세보기</button>
                                 </div>
                                 <div className={styles.starAndName}>
                                     <div className={styles.reviewRatingContainer}>
@@ -159,7 +161,17 @@ const MyPageReviewList: React.FC = () => {
                                 </div>
                                 <p className={styles.reviewComment}>리뷰 : {review.reviewComment}</p>
                                 <p className={styles.reviewReply}>판매자 답글 : {review.reviewReply}</p>
-                                <div className={styles.reviewActions}>
+                                </>
+                            )}
+                            {(review.reviewUseYn)==='N'&&(
+                                <>
+                                <div className={styles.reviewNotUsed}>
+                                    <p>이 리뷰는 삭제되었습니다</p>
+                                </div>
+                                </>
+                            )}
+                                <div className={styles.reviewActions} onClick={() => handleToggle(review)}>
+                                    <FontAwesomeIcon icon={faChevronUp}/>
                                 </div>
                             </div>
                         )}

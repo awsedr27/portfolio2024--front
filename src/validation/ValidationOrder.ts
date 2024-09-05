@@ -1,7 +1,7 @@
 import { OrderSaveRequest } from "../data/order/OrderRequest";
 
 
-const validateOrderSaveRequest = (orderSaveRequest: OrderSaveRequest): string|undefined => {
+const ValidateOrderSaveRequest = (orderSaveRequest: OrderSaveRequest): string|undefined => {
 
 
     if (!orderSaveRequest.postcode || !/^\d{5,6}$/.test(orderSaveRequest.postcode)) {
@@ -41,4 +41,4 @@ const validateOrderSaveRequest = (orderSaveRequest: OrderSaveRequest): string|un
     return;
 };
 
-export default validateOrderSaveRequest;
+export default ValidateOrderSaveRequest;

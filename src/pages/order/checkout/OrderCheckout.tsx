@@ -8,7 +8,7 @@ import { CartListForCheckoutResponse } from "../../../data/cart/CartResponse";
 import { transformCartListForCheckoutResponse } from "../../../converter/CartConverter";
 import { OrderItemSaveRequest, OrderSaveRequest } from "../../../data/order/OrderRequest";
 import { transformOrderListToOrderItemSaveRequestList } from "../../../converter/OrderConverter";
-import validateOrderSaveRequest from "../../../validation/validateOrderSave";
+import ValidateOrderSaveRequest from "../../../validation/ValidationOrder";
 
 const OrderCheckout: React.FC = () => {
     const location = useLocation();
@@ -55,7 +55,7 @@ const OrderCheckout: React.FC = () => {
         const orderItemSaveRequest:OrderItemSaveRequest[]=transformOrderListToOrderItemSaveRequestList(orderCheckoutScreenData.orderList);
         const orderSaveRequest:OrderSaveRequest={orderSaveList:orderItemSaveRequest,postcode:orderCheckoutScreenData.postcode,
           roadAddress:orderCheckoutScreenData.roadAddress,jibunAddress:orderCheckoutScreenData.jibunAddress,detailAddress:orderCheckoutScreenData.detailAddress}
-        const validationMessage=validateOrderSaveRequest(orderSaveRequest);
+        const validationMessage=ValidateOrderSaveRequest(orderSaveRequest);
         if(validationMessage){
           alert(validationMessage);
           return false;

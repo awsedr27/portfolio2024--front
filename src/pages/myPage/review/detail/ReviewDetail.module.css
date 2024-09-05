@@ -1,0 +1,67 @@
+.headerTitle{
+    margin-bottom: 50px;
+    margin-top: 50px;
+}
+.reviewTextarea{
+    resize: none;
+    flex: 1;
+    padding: 15px;
+    border-color: #d3d2d2;
+    border-radius: 20px;
+}
+.starContainer{
+    text-align:center;
+}
+.textAreaContainer{
+    display:flex;
+    margin-bottom:15px;
+}
+.imgContainer{
+    display: flex;
+    justify-content: center;
+    margin-top:30px;
+    margin-bottom:30px;
+}
+.imgContainer img{
+    width: 300px;
+    height: 300px;
+}
+.imgContainer p{
+    width: 300px;
+    height: 300px;
+    text-align: center;
+}
+.productContainer{
+    display: flex;
+    justify-content: center;
+    margin-bottom:15px;
+}
+.productName{
+   padding:15px;
+}
+.buttonContainer{
+    text-align: center;
+}
+.buttonContainer button{
+    margin-top: 20px;
+    background-color: #ff0606;
+    color: #fff;
+    width: 140px;
+    height: 60px;
+    cursor: pointer;
+    font-size: 19px;
+    font-weight: 700;
+    border: none;
+}
+.buttonContainer .deleteBtn{
+    margin-left:15px;
+    background-color: black;
+}
+.reviewReplyContainer{
+    padding: 10px;
+    border-top: solid 1px #dfdada;
+    color: red;
+}
+.reviewReplyInformation{
+    color: #938f8f;
+}
