@@ -14,6 +14,9 @@
     flex-direction: column;
     justify-content: center;
 }
+.tabButton{
+    
+}
 .tabButtonContainer{
     display: flex;
     margin-bottom:15px;
@@ -54,6 +57,7 @@
     width: 90px;
     height: 90px;
     border: solid 1px #dbd7d7;
+    flex:0 0 90px;
 }
 .imgContainer p{
     text-align: center;
@@ -68,6 +72,7 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    flex:1;
 }
 .productName{
     font-size: 22px;

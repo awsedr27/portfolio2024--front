@@ -1,0 +1,221 @@
+.headerTitle{
+    margin-bottom: 50px;
+    margin-top: 50px;
+}
+.headerSubTitle{
+    color:rgb(223, 0, 17);
+    font-weight: 700;
+}
+.orderStatusBtnContainer{
+    display: flex;
+    margin-bottom: 30px;
+}
+.orderButton{
+    flex: 1 1;
+    border: none;
+    background-color: white;
+    cursor: pointer;
+    height: 35px;
+}
+.active{
+    color: rgb(223, 0, 17);
+    font-weight: bold;
+    border-bottom: solid 2px;
+}
+.noOrderList{
+    display: flex;
+    justify-content: center;
+}
+.headerTitleContainer{
+    display: flex;
+    border-bottom: solid 2px;
+    border-top: solid 2px;
+    padding-top:10px;
+    padding-bottom:10px;
+}
+.headerSpan{
+    flex:1;
+    text-align: center;
+}
+.headerPrice{
+    flex:0 0 120px;
+    text-align: center;
+}
+.headerProductName{
+    flex:3;
+    text-align: center;
+}
+.content{
+    display: flex;
+    text-align: center;
+    margin-top:15px;
+}
+.createDate{
+    flex:1;
+}
+.orderId{
+    flex:1;
+    font-weight: 500;
+}
+.productNameAndInformation{
+    flex:3;
+}
+.price{
+    flex:0 0 120px;
+    color:rgb(223, 0, 17);
+    font-weight: 500;
+}
+.cancelBtn{
+    flex:1;
+}
+.cancelBtn button{
+    border: solid 1px #636161;
+    background-color: white;
+    cursor: pointer;
+}
+.information{
+    text-align: center;
+    cursor: pointer;
+}
+.orderDetail{
+
+}
+.orderItemBox{
+    display: flex;
+    padding-top:15px;
+    padding-bottom: 15px;
+    border-bottom:1px solid #ddd;
+    align-items: center;
+}
+.orderItemImg{
+    width: 90px;
+    height: 90px;
+    border: solid 1px #dbd7d7;
+}
+.orderItemImg img{
+    width: 90px;
+    height: 90px;
+}
+.orderItemImg p{
+    width: 90px;
+    height: 90px;
+    text-align: center;
+}
+.orderItemName{
+    flex: 0 0 270px;
+    margin-left:15px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.orderItemPrice{
+    flex: 0 0 115px;
+    text-align: center;
+}
+.orderItemQuantity{
+    flex:1;
+    text-align: center;
+}
+.orderItemStatus{
+    flex:1;
+    text-align: center;
+}
+.orderItemCancelBtn{
+    flex:1;
+    text-align: center;
+}
+.orderItemCancelBtn button{
+    border:solid 1px rgb(197, 197, 197);
+    background-color: white;
+    cursor: pointer;
+}
+.orderAction{
+    text-align: center;
+    cursor: pointer;
+}
+.addButton button{
+    display: block;
+    width: 100%;
+    height: 48px;
+    border: 1px solid rgb(102, 102, 102);
+    border-radius: 6px;
+    background: none;
+    cursor: pointer;
+}
+/* .orderListContainer{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.orderListBox{
+    padding-bottom: 15px;
+    border-bottom:1px solid #636161;
+}
+.dateAndPriceContainer{
+    display: flex;
+    justify-content: space-between;
+}
+.createDate{
+    font-weight: 500;
+    font-size: 20px;
+}
+.price{
+    font-size: 15px;
+}
+.content{
+    display: flex;
+}
+.productNameAndInformation{
+    margin-left: 10px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex: 1;
+}
+.productNameContainer{
+    display: flex;
+}
+.productName{
+    font-size: 22px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+}
+.productNamePlus{
+    font-size: 22px;
+    margin-left:3px;
+    flex:0 0 100px;
+}
+.information{
+    cursor: pointer;
+}
+.orderDetail{
+    
+}
+.orderItemContainer{
+    display: flex;
+    flex-direction: column;
+    margin-top:15px;
+    border-top:1px solid #333232;
+}
+.orderItemBox{
+    display: flex;
+    padding-top:15px;
+    padding-bottom: 15px;
+    border-bottom:1px solid #ddd;
+}
+.orderItemImg{
+    width: 90px;
+    height: 90px;
+    border: solid 1px #dbd7d7;
+}
+.orderItemImg img{
+    width: 90px;
+    height: 90px;
+}
+.orderItemImg p{
+    width: 90px;
+    height: 90px;
+} */

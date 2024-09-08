@@ -14,3 +14,7 @@ export interface MyPageReviewListRequest{
   type:string;
   orderItemId?:number;
 }
+export interface OrderListRequest{
+  status?:string;
+  orderId?:number;
+}

@@ -10,7 +10,7 @@ const Sidebar: React.FC = () => {
           <h1>My PAGE</h1>
           <li><Link to="/myPage">회원정보/수정</Link></li>
           <li><Link to="/myPage/review/list?type=reviewable">상품리뷰</Link></li>
-          <li><Link to="/myPage/review">주문확인/주문취소</Link></li>
+          <li><Link to="/myPage/order/check">주문확인/주문취소</Link></li>
           <li><Link to="/">회원탈퇴</Link></li>
         </ul>
       </div>

@@ -13,6 +13,7 @@ import SidebarLayout from './pages/common/sidebarLayout/SidebarLayout';
 import UserInfo from './pages/myPage/userInfo/UserInfo';
 import MyPageReviewList from './pages/myPage/review/list/MyPageReviewList';
 import ReviewDetail from './pages/myPage/review/detail/ReviewDetail';
+import OrderCheck from './pages/myPage/orderCheck/OrderCheck';
 
 function App() {
 
@@ -33,6 +34,7 @@ function App() {
             <Route index element={<UserInfo/>} />
             <Route path="review/list" element={<MyPageReviewList/>} />
             <Route path="review/detail" element={<ReviewDetail/>} />
+            <Route path="order/check" element={<OrderCheck/>} />
           </Route>
         </Route>
       </Routes>

@@ -14,3 +14,26 @@ export interface MyPageReviewListResponse {
     orderItemId: number;
     orderItemCreateDate:string;
 }
+export interface OrderListResponse {
+  orderList:OrderListResultResponse[]
+}
+export interface OrderItemResponse {
+  orderItemId: number;
+  imageUrl: string;
+  productName: string;
+  quantity: number;
+  price: number;
+  status: string;
+  createDate: string; 
+}
+export interface OrderListResultResponse {
+  orderId: number;
+  totalPrice: number;
+  status: string;
+  postcode: string;
+  roadAddress: string;
+  jibunAddress: string;
+  detailAddress: string;
+  createDate: string; 
+  orderItems: OrderItemResponse[]; 
+}
