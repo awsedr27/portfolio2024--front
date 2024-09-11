@@ -14,10 +14,12 @@ import ReviewItemComponent from '../../../components/review/ReviewItemComponent'
 import { ReviewListRequest } from '../../../data/review/ReviewRequest';
 import { ReviewListResponse } from '../../../data/review/ReviewResponse';
 import { transformReviewListResponse } from '../../../converter/ReviewConverter';
+import { useSpinner } from '../../../context/SpinnerContext';
 
 const ProductDetail: React.FC = () => {
     const [quantity, setQuantity] = useState(1);
     const nav = useNavigate();
+    const {loading,setLoading } = useSpinner();
     const { productId } = useParams<{ productId: string }>();
     const [productDetail, setProductDetail] = useState<ProductDetailScreenData>();
     const [reviewListWithCount, setReviewListWithCount] = useState<ReviewListWithCount>({reviewList:[],reviewCnt:0});
@@ -157,7 +159,6 @@ const ProductDetail: React.FC = () => {
           }
         })
       }
-
     }
 
   return (

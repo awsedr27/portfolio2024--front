@@ -10,12 +10,13 @@ import ProductItemComponent from '../components/product/ProductItemComponent';
 import { CartSaveRequest } from '../data/cart/CartRequest';
 import { CartSaveResponse } from '../data/cart/CartResponse';
 import { useLayoutContext } from '../context/LayoutContext';
+import { useSpinner } from '../context/SpinnerContext';
 
 
 
 const Main: React.FC = () => {
   const [mainScreenData, setMainScreenData] = useState<MainScreenData>({productList:[]});
-  const [loading, setLoading] = useState(false);
+  const {loading,setLoading } = useSpinner();
   const { categoryId } = useParams<{ categoryId: string }>();
   const categoryIdRequest=Number(categoryId)||undefined;
   const lastProductIdRef = useRef<number | undefined>(undefined);
@@ -65,6 +66,7 @@ const Main: React.FC = () => {
 
   const handleCartSaveIconClick = async (productId: number) => {
     try{
+      setLoading(true);
       const cartSaveRequest:CartSaveRequest={productId:productId};
       const response=await axiosInstance.post('/api/cart/save',cartSaveRequest);
       const resultData:CartSaveResponse = response.data;
@@ -73,16 +75,16 @@ const Main: React.FC = () => {
       setCartListCnt(cartListCount.data);
     }catch(error){
       console.log(error)
-    }
+    }finally {
+      setLoading(false);
+  }
   };
-
   return (
-    
     <div className={styles.productList}>
+      {((!loading)&&(mainScreenData.productList.length===0))&&(<div>상품 목록이 없습니다</div>)}
       {mainScreenData.productList.map(product => (
         <ProductItemComponent key={product.productId} productItem={product} onClick={handleProductClick} onCartSaveClick={handleCartSaveIconClick}/>
       ))}
-    {loading && <p>Loading...</p>}
     </div>
   );
 };

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import styles from './OrderCheck.module.css'; 
 import axiosInstance from "../../../network/Api";
-import { OrderListRequest } from "../../../data/order/OrderRequest";
+import { OrderCancelRequest, OrderItemCancelRequest, OrderListRequest } from "../../../data/order/OrderRequest";
 import { OrderCheckScreenData, OrderItem, OrderList } from "./OrderCheckScreenData";
 import { OrderListResponse } from "../../../data/order/OrderResponse";
 import { transformOrderListResultResponseToOrderCheckScreenData } from "../../../converter/OrderConverter";
@@ -34,27 +34,28 @@ const OrderCheck: React.FC = () => {
             return [];
         }
     }
-    useEffect(() => {
+    const loadInitialOrders = async () => {
         const requestId = ++lastRequestId.current;
-        const loadInitialOrders = async () => {
-            setLoading(true);
-            setHasMore(true);
-            const orderList=await getOrderList();               
-            if (requestId === lastRequestId.current) {
-                if(orderList.length<5){
-                    setHasMore(false);
-                }
-                setOrderCheckScreenData(prev=>{
-                    if(orderList.length>0){
-                        lastOrderIdRef.current=orderList[orderList.length-1].orderId;
-                    }
-                    return({
-                        orderList:orderList
-                    })
-                });
-                setLoading(false);
+        setLoading(true);
+        setHasMore(true);
+        const orderList=await getOrderList();               
+        if (requestId === lastRequestId.current) {
+            if(orderList.length<5){
+                setHasMore(false);
             }
+            setOrderCheckScreenData(prev=>{
+                if(orderList.length>0){
+                    lastOrderIdRef.current=orderList[orderList.length-1].orderId;
+                }
+                return({
+                    orderList:orderList
+                })
+            });
+            setExpandedOrderId(null);
+            setLoading(false);
         }
+    }
+    useEffect(() => {
         loadInitialOrders();
       }, [orderStatus]);
     const handleButtonClick=(tab:string)=>{
@@ -63,8 +64,25 @@ const OrderCheck: React.FC = () => {
     const handleToggle=(order:OrderList)=>{
         setExpandedOrderId(prevId => prevId === order.orderId ? null : order.orderId); 
     }
-    const handleAddOrderList=()=>{
-
+    const handleAddOrderList=async ()=>{
+        const requestId = ++lastRequestId.current;
+        setLoading(true);
+        setHasMore(true);
+        const orderList=await getOrderList(lastOrderIdRef.current);               
+        if (requestId === lastRequestId.current) {
+            if(orderList.length<5){
+                setHasMore(false);
+            }
+            setOrderCheckScreenData(prev=>{
+                if(orderList.length>0){
+                    lastOrderIdRef.current=orderList[orderList.length-1].orderId;
+                }
+                return({
+                    orderList:[...prev.orderList,...orderList]
+                })
+            });
+            setLoading(false);
+        }
     }
     const changeStatusText=(status:string)=>{
         switch (status) {
@@ -81,6 +99,42 @@ const OrderCheck: React.FC = () => {
             default:
               return '상태 없음';
           }
+    }
+    const handleOrderCancel=async (orderId:number)=>{
+        try{
+            const userConfirmed = window.confirm('주문을 취소하시겠습니까?');
+            if (userConfirmed) {
+                const orderCancelRequest:OrderCancelRequest={orderId:orderId};
+                const response = await axiosInstance.post('/api/order/cancel',orderCancelRequest);
+                if(response.status===200){
+                    alert("주문을 취소했습니다");
+                    loadInitialOrders();
+                    return;
+                }
+              } else {
+                return;
+              }
+        }catch(error){
+            alert("주문취소에 실패했습니다. 잠시 후 다시 시도해주세요");
+        }
+    }
+    const handleOrderItemCancel=async (orderItemId:number)=>{
+        try{
+            const userConfirmed = window.confirm('주문상품을 개별취소하시겠습니까?');
+            if (userConfirmed) {
+                const orderItemCancelRequest:OrderItemCancelRequest={orderItemId:orderItemId};
+                const response = await axiosInstance.post('/api/order/orderItem/cancel',orderItemCancelRequest);
+                if(response.status===200){
+                    alert("주문상품을 개별취소했습니다");
+                    loadInitialOrders();
+                    return;
+                }
+              } else {
+                return;
+              }
+        }catch(error){
+            alert("주문취소에 실패했습니다. 잠시 후 다시 시도해주세요");
+        }
     }
    return(
     <div className={styles.orderCheckContainer}>
@@ -149,17 +203,24 @@ const OrderCheck: React.FC = () => {
                             </div>
                             <div className={styles.price}>{order.totalPrice.toLocaleString('ko-KR')}원</div>
                             <div className={styles.cancelBtn}>
-                                {(order.status==='PENDING')?<button>주문취소</button>:<span>취소불가</span>}
+                                {(!order.orderItems.some(item => (item.status !== 'PENDING') && (item.status !== 'CANCELLED')))&&(order.status==='PENDING')?<button onClick={()=>{handleOrderCancel(order.orderId)}}>주문취소</button>:<span>취소불가</span>}
                             </div>
                           </div>
-                          <div className={styles.information} onClick={() => handleToggle(order)}>
-                                {(expandedOrderId !== order.orderId)&&
-                                    (<div><FontAwesomeIcon icon={faChevronDown}/></div>)
-                                }
-                          </div>
+                          {(expandedOrderId !== order.orderId)&&
+                            (<div className={styles.orderAction} onClick={() => handleToggle(order)}><FontAwesomeIcon icon={faChevronDown}/></div>)
+                          }
+
                           {(expandedOrderId === order.orderId)&& (
                             <div className={styles.orderDetail}>
                                 <div className={styles.orderItemContainer}>
+                                    <div className={styles.expandedTitle}>
+                                        <span className={styles.expandedImg}>상품이미지</span>
+                                        <span className={styles.expandedName}>상품이름</span>
+                                        <span className={styles.expandedPrice}>가격</span>
+                                        <span className={styles.expandedQuantity}>수량</span>
+                                        <span className={styles.expandedStatus}>주문상태</span>
+                                        <span className={styles.expandedCancel}>취소</span>
+                                    </div>
                                     {order.orderItems.map(orderItem=>(
                                         <div className={styles.orderItemBox}>
                                                 <div className={styles.orderItemImg}>
@@ -174,7 +235,7 @@ const OrderCheck: React.FC = () => {
                                             <div className={styles.orderItemQuantity}>x {orderItem.quantity}</div>
                                             <div className={styles.orderItemStatus}>{changeStatusText(orderItem.status)}</div>
                                             <div className={styles.orderItemCancelBtn}>
-                                                {(orderItem.status==='PENDING')?(<button>개별취소</button>):(<span>취소불가</span>)}
+                                                {(orderItem.status==='PENDING')?(<button onClick={()=>handleOrderItemCancel(orderItem.orderItemId)}>개별취소</button>):(<span>취소불가</span>)}
                                             </div>
                                         </div>
                                     ))}

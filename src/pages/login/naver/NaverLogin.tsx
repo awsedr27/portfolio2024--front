@@ -30,8 +30,13 @@ const NaverLogin = () => {
                         alert('Do not found accessToken');
                         window.location.replace("/login");
                       }
-                } catch (error) {
-                    alert('로그인에 실패했습니다. 잠시 후 다시 시도해주세요!');
+                } catch (error:any) {
+                    console.log(error);
+                    if(error.response.status===400){
+                        alert(error.response.data);
+                    }else{
+                        alert('로그인에 실패했습니다. 잠시 후 다시 시도해주세요!');
+                    }
                     window.location.replace("/login");
                 }
             } else {

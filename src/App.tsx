@@ -14,10 +14,15 @@ import UserInfo from './pages/myPage/userInfo/UserInfo';
 import MyPageReviewList from './pages/myPage/review/list/MyPageReviewList';
 import ReviewDetail from './pages/myPage/review/detail/ReviewDetail';
 import OrderCheck from './pages/myPage/orderCheck/OrderCheck';
+import UserDelete from './pages/myPage/userDelete/UserDelete';
+import { SpinnerProvider } from './context/SpinnerContext';
+import GlobalSpinner from './pages/common/spinner/GlobalSpinner';
 
 function App() {
 
   return (
+    <SpinnerProvider>
+    <GlobalSpinner />
     <Router>
       <Routes>
           <Route path="/login" Component={Login} />
@@ -35,10 +40,13 @@ function App() {
             <Route path="review/list" element={<MyPageReviewList/>} />
             <Route path="review/detail" element={<ReviewDetail/>} />
             <Route path="order/check" element={<OrderCheck/>} />
+            <Route path="user/delete" element={<UserDelete/>} />
           </Route>
         </Route>
       </Routes>
     </Router>
+    </SpinnerProvider>
+
   );
 }
 

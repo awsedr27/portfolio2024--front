@@ -18,3 +18,9 @@ export interface OrderListRequest{
   status?:string;
   orderId?:number;
 }
+export interface OrderCancelRequest{
+  orderId:number;
+}
+export interface OrderItemCancelRequest{
+  orderItemId:number;
+}

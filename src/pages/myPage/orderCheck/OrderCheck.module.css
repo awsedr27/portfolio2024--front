@@ -73,10 +73,6 @@
     background-color: white;
     cursor: pointer;
 }
-.information{
-    text-align: center;
-    cursor: pointer;
-}
 .orderDetail{
 
 }
@@ -132,6 +128,8 @@
 .orderAction{
     text-align: center;
     cursor: pointer;
+    border:solid 1px rgb(255, 255, 255);
+    margin-bottom:15px;
 }
 .addButton button{
     display: block;
@@ -142,80 +140,35 @@
     background: none;
     cursor: pointer;
 }
-/* .orderListContainer{
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-.orderListBox{
-    padding-bottom: 15px;
-    border-bottom:1px solid #636161;
-}
-.dateAndPriceContainer{
-    display: flex;
-    justify-content: space-between;
-}
-.createDate{
-    font-weight: 500;
-    font-size: 20px;
-}
-.price{
-    font-size: 15px;
-}
-.content{
-    display: flex;
-}
-.productNameAndInformation{
-    margin-left: 10px;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    flex: 1;
-}
-.productNameContainer{
-    display: flex;
-}
-.productName{
-    font-size: 22px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-
-}
-.productNamePlus{
-    font-size: 22px;
-    margin-left:3px;
-    flex:0 0 100px;
-}
-.information{
-    cursor: pointer;
-}
-.orderDetail{
-    
-}
-.orderItemContainer{
-    display: flex;
-    flex-direction: column;
-    margin-top:15px;
-    border-top:1px solid #333232;
-}
-.orderItemBox{
+.expandedTitle{
     display: flex;
     padding-top:15px;
     padding-bottom: 15px;
     border-bottom:1px solid #ddd;
+    align-items: center;
 }
-.orderItemImg{
-    width: 90px;
-    height: 90px;
-    border: solid 1px #dbd7d7;
+.expandedImg{
+    flex: 0 0 92px;
+    text-align: center;
 }
-.orderItemImg img{
-    width: 90px;
-    height: 90px;
+.expandedName{
+    flex: 0 0 270px;
+    margin-left:15px;
+    text-align: center;
 }
-.orderItemImg p{
-    width: 90px;
-    height: 90px;
-} */
+.expandedPrice{
+    flex: 0 0 115px;
+    text-align: center;
+}
+.expandedQuantity{
+    flex:1;
+    text-align: center;
+}
+.expandedStatus{
+    flex:1;
+    text-align: center;
+}
+.expandedCancel{
+    flex:1;
+    text-align: center;
+}

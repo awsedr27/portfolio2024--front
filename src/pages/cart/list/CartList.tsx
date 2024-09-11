@@ -10,18 +10,28 @@ import { CartListDeleteRequest, CartUpdateRequest } from '../../../data/cart/Car
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import { useLayoutContext } from '../../../context/LayoutContext';
 
 
 
 const Cart: React.FC = () => {
   const nav = useNavigate();
+  const { setCartListCnt } = useLayoutContext();
     const [cartListScreenData, setCartListScreenData] = useState<CartListScreenData>({cartList:[],calcuatedAllPrice:0,isAllSelect:false,
-      calcuatedAllDeliveryPrice:0,calcuatedAllDiscountPrice:0,calcuatedPayPrice:0});
+      calcuatedAllDiscountPrice:0,calcuatedPayPrice:0});
 
     useEffect(() => {
         window.scrollTo(0, 0);
         fetchCartList();
       }, []);
+      const fetchCartListCount = async () => {
+        try {
+          const response = await axiosInstance.post('/api/cart/list/count');
+          setCartListCnt(response.data);
+        } catch (error) {
+          console.error('Failed to fetch cart list count:', error);
+        }
+      };
       const fetchCartList = async () => {
         try {
           const response = await axiosInstance.post('/api/cart/list');
@@ -107,6 +117,7 @@ const Cart: React.FC = () => {
           }
           await axiosInstance.post('/api/cart/list/delete',cartListDeleteRequest);
           fetchCartList();
+          fetchCartListCount();
         }catch(error){
           console.log(error)
         }
@@ -187,10 +198,6 @@ const Cart: React.FC = () => {
         <div className={styles.discountPrice}>
           <p>할인금액</p>
           <p>-{cartListScreenData.calcuatedAllDiscountPrice.toLocaleString('ko-KR')}<span> 원</span></p>
-        </div>
-        <div className={styles.deliveryPrice}>
-          <p>배송비</p>
-          <p>{cartListScreenData.calcuatedAllDeliveryPrice.toLocaleString('ko-KR')}<span> 원</span></p>
         </div>
         <div className={styles.payPrice}>
           <h3>최종결제금액</h3>
