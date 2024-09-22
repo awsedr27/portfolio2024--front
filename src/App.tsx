@@ -1,5 +1,5 @@
 import './App.css';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, useParams, useLocation } from 'react-router-dom';
 import Login from './pages/login/Login';
 import NaverLogin from './pages/login/naver/NaverLogin';
 import Main from './pages/Main';
@@ -19,7 +19,17 @@ import { SpinnerProvider } from './context/SpinnerContext';
 import GlobalSpinner from './pages/common/spinner/GlobalSpinner';
 
 function App() {
-
+  const ProductListRoute = () => {
+    const { categoryId } = useParams<{ categoryId: string }>();
+    const categoryIdRequest=Number(categoryId)||undefined;
+    const location = useLocation();
+    let searchKeyword:string|undefined = new URLSearchParams(location.search).get('keyword')||undefined;
+    if(categoryIdRequest){
+      return <ProductList key={`category-${categoryId}`} />;
+    }else{
+      return <ProductList key={'searchKeyword-'+searchKeyword} />;
+    }
+  };
   return (
     <SpinnerProvider>
     <GlobalSpinner />
@@ -29,8 +39,8 @@ function App() {
           <Route path="/login/naver" Component={NaverLogin} />
         <Route path="/" element={<Layout />}>
           <Route index element={<Main />} />
-          <Route path="/product/category/:categoryId" element={<ProductList/>} />
-          <Route path="/product/search" element={<ProductList/>} />
+          <Route path="/product/category/:categoryId" element={<ProductListRoute/>} />
+          <Route path="/product/search" element={<ProductListRoute/>} />
           <Route path="/product/:productId" element={<ProductDetail/>} />
           <Route path="/cart/list" element={<CartList/>} />
           <Route path="/order/checkout" element={<OrderCheckout/>}/>

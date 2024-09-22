@@ -5,7 +5,7 @@ export interface ReviewListResponse {
 interface ReviewItemResponse {
     reviewId:number;
     rating:number;
-    userName:string;
+    nickname:string;
     comment:string;
     reply:string;
     createDate:string;

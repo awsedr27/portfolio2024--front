@@ -5,50 +5,32 @@ import axiosInstance from '../../../network/Api';
 import { UserMyPageInfoResponse } from '../../../data/user/UserResponse';
 import { UserInfoScreenData } from './UserInfoScreenData';
 import { UserMyPageInfoUpdateRequest } from '../../../data/user/UserRequest';
+import { useSpinner } from '../../../context/SpinnerContext';
 
 const UserInfo: React.FC = () => {
   const nav = useNavigate();
   const loadingRef = useRef(false);
+  const {loading,setLoading } = useSpinner();
   const [userInfoScreenData, setUserInfoScreenData] = useState<UserInfoScreenData>();
-  const fetchUserInfo=async ()=>{
-    try{
+  const getUserInfo=async ()=>{
       const response = await axiosInstance.post('/api/user/myPage/info');
       const resultData:UserMyPageInfoResponse = response.data;
       const userInfo:UserInfoScreenData={...resultData};
       return userInfo;
-    }catch(error){
-      console.log(error);
-      nav('/errorPage',{ replace: true });
-      return;
-    }
-  }
-  const updateUserInfo=async ()=>{
-    try{
-      if(!userInfoScreenData){
-        return;
-      }
-      if(loadingRef.current){
-        return;
-      }
-      loadingRef.current=true;
-      const updateRequest:UserMyPageInfoUpdateRequest={nickname:userInfoScreenData.nickname,email:userInfoScreenData?.email}
-      const response = await axiosInstance.post('/api/user/myPage/info/update',updateRequest);
-      if(response.status===200){
-
-        nav('/',{ replace: true });
-      }
-
-    }catch(error){
-      console.log(error);
-      nav('/errorPage',{ replace: true });
-      return;
-    }finally{
-      loadingRef.current=false;
-    }
   }
   const init=async ()=>{
-    const userInfo=await fetchUserInfo();
-    setUserInfoScreenData(userInfo);
+    try{
+      if(loadingRef.current){return;}
+      loadingRef.current=true;
+      setLoading(true);
+      const userInfo=await getUserInfo();
+      setUserInfoScreenData(userInfo);
+      setLoading(false);
+      loadingRef.current=false;
+    }catch(error){
+      setLoading(false);
+      nav('/errorPage',{ replace: true });
+    }
   }
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -68,7 +50,23 @@ const UserInfo: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await updateUserInfo();
+    try{
+      if(!userInfoScreenData){
+        return;
+      }
+      if(loadingRef.current){return;}
+      loadingRef.current=true;
+      setLoading(true);
+      loadingRef.current=true;
+      const updateRequest:UserMyPageInfoUpdateRequest={nickname:userInfoScreenData.nickname,email:userInfoScreenData?.email}
+      const response = await axiosInstance.post('/api/user/myPage/info/update',updateRequest);
+      setLoading(false);
+      loadingRef.current=false;
+      nav('/',{ replace: true });
+    }catch(error){
+      setLoading(false);
+      nav('/errorPage',{ replace: true });
+    }
   };
 
   return (

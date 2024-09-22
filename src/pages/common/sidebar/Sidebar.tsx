@@ -16,7 +16,7 @@ const Sidebar: React.FC = () => {
       </div>
       <div className={styles.sidebarItemContainer}>
         <ul>
-          <li><Link to="/myPage"><h3>고객센터</h3></Link></li>
+          <li><Link to="/myPage/help"><h3>고객센터</h3></Link></li>
         </ul>
       </div>
     </nav>

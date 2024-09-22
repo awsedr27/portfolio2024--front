@@ -8,6 +8,7 @@ import { OrderListResponse } from "../../../data/order/OrderResponse";
 import { transformOrderListResultResponseToOrderCheckScreenData } from "../../../converter/OrderConverter";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
+import { useSpinner } from "../../../context/SpinnerContext";
 
 const OrderCheck: React.FC = () => {
     const nav = useNavigate();
@@ -16,30 +17,27 @@ const OrderCheck: React.FC = () => {
     const [orderCheckScreenData, setOrderCheckScreenData] = useState<OrderCheckScreenData>({orderList:[]});
     const imgLocation = process.env.REACT_APP_PRODUCT_IMG_LOCATION;
     const baseUrl = process.env.REACT_APP_API_URL;
-    const lastRequestId = useRef(0);
+    //const lastRequestId = useRef(0);
     const [hasMore, setHasMore] = useState(true);
-    const [loading, setLoading] = useState(false);
+    const {loading,setLoading } = useSpinner();
+    const loadingRef = useRef(false);
     const lastOrderIdRef = useRef<number | undefined>(undefined);
     const [expandedOrderId, setExpandedOrderId] = useState<number | null>(null);
 
     const getOrderList=async (orderId?:number)=>{
-        try{
-            const request:OrderListRequest={status:orderStatus,orderId:orderId}
-            const response = await axiosInstance.post('/api/order/list',request);
-            const result:OrderListResponse=response.data;
-            const orderList=transformOrderListResultResponseToOrderCheckScreenData(result.orderList);
-            return orderList;
-        }catch(error){
-            nav('/errorPage',{ replace: true });
-            return [];
-        }
+        const request:OrderListRequest={status:orderStatus,orderId:orderId}
+        const response = await axiosInstance.post('/api/order/list',request);
+        const result:OrderListResponse=response.data;
+        const orderList=transformOrderListResultResponseToOrderCheckScreenData(result.orderList);
+        return orderList;
     }
-    const loadInitialOrders = async () => {
-        const requestId = ++lastRequestId.current;
-        setLoading(true);
-        setHasMore(true);
-        const orderList=await getOrderList();               
-        if (requestId === lastRequestId.current) {
+    const init = async () => {
+        try{
+            if(loadingRef.current){return;}
+            loadingRef.current=true;
+            setLoading(true);
+            setHasMore(true);
+            const orderList=await getOrderList();  
             if(orderList.length<5){
                 setHasMore(false);
             }
@@ -50,13 +48,17 @@ const OrderCheck: React.FC = () => {
                 return({
                     orderList:orderList
                 })
-            });
+            });  
             setExpandedOrderId(null);
             setLoading(false);
+            loadingRef.current=false;
+        }catch(error){
+            setLoading(false);
+            nav('/errorPage',{ replace: true });
         }
     }
     useEffect(() => {
-        loadInitialOrders();
+        init();
       }, [orderStatus]);
     const handleButtonClick=(tab:string)=>{
         setOrderStatus(tab);
@@ -65,11 +67,11 @@ const OrderCheck: React.FC = () => {
         setExpandedOrderId(prevId => prevId === order.orderId ? null : order.orderId); 
     }
     const handleAddOrderList=async ()=>{
-        const requestId = ++lastRequestId.current;
-        setLoading(true);
-        setHasMore(true);
-        const orderList=await getOrderList(lastOrderIdRef.current);               
-        if (requestId === lastRequestId.current) {
+        try{
+            if(loadingRef.current){return;}
+            loadingRef.current=true;
+            setLoading(true);
+            const orderList=await getOrderList(lastOrderIdRef.current);               
             if(orderList.length<5){
                 setHasMore(false);
             }
@@ -82,6 +84,10 @@ const OrderCheck: React.FC = () => {
                 })
             });
             setLoading(false);
+            loadingRef.current=false;
+        }catch(error){
+            setLoading(false);
+            nav('/errorPage',{ replace: true });
         }
     }
     const changeStatusText=(status:string)=>{
@@ -104,36 +110,42 @@ const OrderCheck: React.FC = () => {
         try{
             const userConfirmed = window.confirm('주문을 취소하시겠습니까?');
             if (userConfirmed) {
+                if(loadingRef.current){return;}
+                loadingRef.current=true;
+                setLoading(true);
                 const orderCancelRequest:OrderCancelRequest={orderId:orderId};
                 const response = await axiosInstance.post('/api/order/cancel',orderCancelRequest);
-                if(response.status===200){
-                    alert("주문을 취소했습니다");
-                    loadInitialOrders();
-                    return;
-                }
-              } else {
+                alert("주문을 취소했습니다");
+                setLoading(false);
+                loadingRef.current=false;
+                init();
+            } else {
                 return;
-              }
+            }
         }catch(error){
-            alert("주문취소에 실패했습니다. 잠시 후 다시 시도해주세요");
+            setLoading(false);
+            nav('/errorPage',{ replace: true });
         }
     }
     const handleOrderItemCancel=async (orderItemId:number)=>{
         try{
             const userConfirmed = window.confirm('주문상품을 개별취소하시겠습니까?');
             if (userConfirmed) {
+                if(loadingRef.current){return;}
+                loadingRef.current=true;
+                setLoading(true);
                 const orderItemCancelRequest:OrderItemCancelRequest={orderItemId:orderItemId};
                 const response = await axiosInstance.post('/api/order/orderItem/cancel',orderItemCancelRequest);
-                if(response.status===200){
-                    alert("주문상품을 개별취소했습니다");
-                    loadInitialOrders();
-                    return;
-                }
+                alert("주문상품을 개별취소했습니다");
+                setLoading(false);
+                loadingRef.current=false;
+                init();
               } else {
                 return;
               }
         }catch(error){
-            alert("주문취소에 실패했습니다. 잠시 후 다시 시도해주세요");
+            setLoading(false);
+            nav('/errorPage',{ replace: true });        
         }
     }
    return(

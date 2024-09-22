@@ -1,4 +1,3 @@
-// src/ProductDetail.tsx
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import axiosInstance from '../../../network/Api';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -22,47 +21,40 @@ const ProductDetail: React.FC = () => {
     const {loading,setLoading } = useSpinner();
     const { productId } = useParams<{ productId: string }>();
     const [productDetail, setProductDetail] = useState<ProductDetailScreenData>();
-    const [reviewListWithCount, setReviewListWithCount] = useState<ReviewListWithCount>({reviewList:[],reviewCnt:0});
+    const [reviewListWithCount, setReviewListWithCount] = useState<ReviewListWithCount>();
     const lastReviewIdRef = useRef<number | undefined>(undefined);
     const lastReviewRatingRef = useRef<number | undefined>(undefined);
-    const reviewLoadingRef = useRef(false);
+    const loadingRef = useRef(false);
     const reviewHasMoreRef = useRef(true);
     const [reviewHasMore, setReviewHasMore] = useState(true);
-    const [reviewLoading, setReviewLoading] = useState(false);
-
     const [reviewSortBy, setReviewSortBy] = useState('LATEST');
     const { setCartListCnt } = useLayoutContext();
     const imgLocation = process.env.REACT_APP_PRODUCT_IMG_LOCATION;
     const baseUrl = process.env.REACT_APP_API_URL;
-
     const init = useCallback(async () => {
-      const productDetail=await getProductDetail({productId:Number(productId)});
-      const reviewListWithCount=await getReviewListWithCount({productId:Number(productId),sortBy:"LATEST"});
-      setProductDetail(productDetail);
-      if(reviewListWithCount){
-        setReviewListWithCount(prevState => ({
-          reviewList:reviewListWithCount.reviewList,
-          reviewCnt:reviewListWithCount.reviewCnt
-        }));
+      try{
+        if(loadingRef.current){return;}
+        loadingRef.current=true;
+        setLoading(true);
+        const productDetail=await getProductDetail({productId:Number(productId)});
+        const reviewListWithCount=await getReviewListWithCount({productId:Number(productId),sortBy:"LATEST"});
+        setProductDetail(productDetail);
+        setReviewListWithCount(reviewListWithCount);
+        setLoading(false);
+        loadingRef.current=false;
+      }catch(error){
+        setLoading(false);
+        nav('/errorPage',{ replace: true });
       }
     }, []);
 
     const getProductDetail = useCallback(async (productDetailRequest:ProductDetailRequest) => {
-        try {
           const response = await axiosInstance.post('/api/product/detail', productDetailRequest);
           const resultData:ProductDetailResponse = response.data;
           const productDetail=transformProductDetailResponse(resultData);
           return productDetail;
-        } catch (error) {
-          nav('/errorPage',{ replace: true });
-          return;
-        }
       }, []);
       const getReviewListWithCount = useCallback(async (reviewListRequest:ReviewListRequest) => {
-        try {
-          if(reviewLoadingRef.current){return null;}
-          reviewLoadingRef.current=true;
-          setReviewLoading(true);
           const response = await axiosInstance.post('/api/review/list', reviewListRequest);
           const resultData:ReviewListResponse = response.data;
           const reviewList=transformReviewListResponse(resultData);
@@ -74,33 +66,19 @@ const ProductDetail: React.FC = () => {
           lastReviewIdRef.current = reviewList[reviewList.length - 1]?.reviewId;
           lastReviewRatingRef.current = reviewList[reviewList.length - 1]?.rating;
           return {reviewList,reviewCnt};
-        } catch (error) {
-          nav('/errorPage',{ replace: true });
-          return null;
-        }finally {
-          reviewLoadingRef.current = false;
-          setReviewLoading(false);
-      }
       }, []);
   useEffect(() => {
     window.scrollTo(0, 0);
     init();
     }, []);
-  
-  useEffect(() => {
-    setProductDetail(prevProduct => {
-      if (prevProduct === undefined) {
-        return prevProduct;
-      }
-      return {
-        ...prevProduct,
-        caculatedPrice: quantity*prevProduct.price
-      };
-    })
-  }, [quantity]);
-  if (!productDetail) {
+
+  if (!productDetail||!reviewListWithCount) {
     return <div>Loading...</div>;
   }
+  const caculatedPrice: number = (productDetail.price * quantity);
+
+
+
   const increaseQuantity = () => {
      setQuantity(prevQuantity => (prevQuantity+1 > 50 ? 50 : prevQuantity+1));
   };
@@ -110,56 +88,88 @@ const ProductDetail: React.FC = () => {
   };
   const handleCartSaveBtnClick = async () => {
     try{
+      if(loadingRef.current){return;}
+      loadingRef.current=true;
+      setLoading(true);
       const cartSaveRequest:CartSaveRequest={productId:productDetail.productId,quantity:quantity};
       const response=await axiosInstance.post('/api/cart/save',cartSaveRequest);
       const resultData:CartSaveResponse = response.data;
+      alert('장바구니에 '+resultData.quantity+'개를 담았습니다');
       const cartListCount=await axiosInstance.post('/api/cart/list/count');
       setCartListCnt(cartListCount.data);
-      alert('장바구니에 '+resultData.quantity+'개를 담았습니다');
-      nav('/',{ replace: true });
+      setLoading(false);
+      loadingRef.current=false;
       return;
     }catch(error){
-      console.log(error)
+      console.log(error);
+      setLoading(false);
+      nav('/errorPage',{ replace: true });
     }
   };
   const handleBuyNowBtnClick= async()=>{
     try{
+      if(loadingRef.current){return;}
+      loadingRef.current=true;
+      setLoading(true);
       const cartBuyNowRequest:CartBuyNowRequest={productId:productDetail.productId,quantity:quantity};
       const response=await axiosInstance.post('/api/cart/buy-now',cartBuyNowRequest);
-      
       if(response.status===200){
         const cartListCount=await axiosInstance.post('/api/cart/list/count');
         setCartListCnt(cartListCount.data);
-        const orderList:number[]=[productDetail.productId]
+        const orderList:number[]=[productDetail.productId];
+        setLoading(false);
         nav('/order/checkout', { state: { orderList } });
       }
     }catch(error){
-      console.log(error)
+      console.log(error);
+      setLoading(false);
+      nav('/errorPage',{ replace: true });
     }
   }
   const handleChangeReviewSoryBy=async (event:any)=>{
-    reviewHasMoreRef.current=true
-    setReviewHasMore(true);
-    const reviewListWithCount=await getReviewListWithCount({productId:Number(productId),sortBy:String(event.target.value)});
-    if(reviewListWithCount){
-      setReviewListWithCount({reviewList:reviewListWithCount.reviewList,reviewCnt:reviewListWithCount.reviewCnt});
+    try{
+      if(loadingRef.current){return;}
+      loadingRef.current=true;
+      setLoading(true);
+      reviewHasMoreRef.current=true
+      setReviewHasMore(true);
+      const reviewListWithCount=await getReviewListWithCount({productId:Number(productId),sortBy:String(event.target.value)});
+      setReviewListWithCount(reviewListWithCount);
+      setReviewSortBy(event.target.value);
+      setLoading(false);
+      loadingRef.current=false;
+    }catch(error){
+      console.log(error);
+      setLoading(false);
+      nav('/errorPage',{ replace: true });
     }
-    setReviewSortBy(event.target.value);
   }
   const handleClickReviewLoadMoreBtn=async ()=>{
-    if(!reviewHasMoreRef.current){
-      return;
-    }
-      const reviewListWithCount=await getReviewListWithCount({productId:Number(productId),sortBy:reviewSortBy,reviewId:lastReviewIdRef.current,rating:lastReviewRatingRef.current});
-      if(reviewListWithCount){
+    try{
+      if(loadingRef.current){return;}
+      loadingRef.current=true;
+      setLoading(true);
+      if(!reviewHasMoreRef.current){
+        return;
+      }
+        const reviewListWithCount=await getReviewListWithCount({productId:Number(productId),sortBy:reviewSortBy,reviewId:lastReviewIdRef.current,rating:lastReviewRatingRef.current});
         setReviewListWithCount(prev=>{
-          return {
+          if(!prev){
+            return(undefined);
+          }
+          return({
             reviewCnt:reviewListWithCount.reviewCnt,
             reviewList:[...prev.reviewList,...reviewListWithCount.reviewList]
-          }
-        })
-      }
+          })
+        });
+        setLoading(false);
+        loadingRef.current=false;
+    }catch(error){
+      console.log(error);
+      setLoading(false);
+      nav('/errorPage',{ replace: true });
     }
+  }
 
   return (
     <div className={styles.productDetail}>
@@ -191,11 +201,11 @@ const ProductDetail: React.FC = () => {
                   <p className={styles.quantity}>{quantity}</p>
                   <button onClick={increaseQuantity} className={styles.controlButton}>+</button>  
                 </div>
-                  <p style={{fontWeight:'bold'}}>{productDetail.caculatedPrice.toLocaleString('ko-KR')}원</p>
+                  <p style={{fontWeight:'bold'}}>{caculatedPrice.toLocaleString('ko-KR')}원</p>
               </div>
               <p style={{fontSize:10}}>최대 50개 구매가능</p>
             </div>
-            <h1 style={{textAlign:'right',color:'rgb(223, 0, 17)'}}>{productDetail.caculatedPrice.toLocaleString('ko-KR')}원</h1>
+            <h1 style={{textAlign:'right',color:'rgb(223, 0, 17)'}}>{caculatedPrice.toLocaleString('ko-KR')}원</h1>
           </div>
         </div>
       </div>
@@ -212,11 +222,11 @@ const ProductDetail: React.FC = () => {
           </div>
           <div className={styles.reviewList}>
           {reviewListWithCount.reviewList.map((item,index) => (
-            <ReviewItemComponent key={index} reviewItem={item}></ReviewItemComponent>      
+            <ReviewItemComponent key={item.reviewId} reviewItem={item}></ReviewItemComponent>      
             ))}
             {reviewHasMore && (
-              <button onClick={handleClickReviewLoadMoreBtn} disabled={reviewLoading}>
-                {reviewLoading ? '로딩 중...' : '더보기'}
+              <button onClick={handleClickReviewLoadMoreBtn} disabled={loading}>
+                {loading ? '로딩 중...' : '더보기'}
               </button>
             )}
           </div>

@@ -9,6 +9,7 @@ import { transformMyPageReviewListResponseToMyPageReviewListScreenData } from '.
 import { MyPageReviewDetail } from '../detail/ReviewDetailScreenData';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
+import { useSpinner } from '../../../../context/SpinnerContext';
 const MyPageReviewList: React.FC = () => {
     const nav = useNavigate();
     const location = useLocation();
@@ -16,58 +17,57 @@ const MyPageReviewList: React.FC = () => {
     const [myPageReviewList, setMyPageReviewList] = useState<MyPageReviewListScreenData>({myPageReviewList:[]});
     const imgLocation = process.env.REACT_APP_PRODUCT_IMG_LOCATION;
     const baseUrl = process.env.REACT_APP_API_URL;
-
     const lastMyPageReviewIdRef = useRef<number | undefined>(undefined);
     const [hasMore, setHasMore] = useState(true);
-    const [loading, setLoading] = useState(false);
+    const {loading,setLoading } = useSpinner();
+    const loadingRef = useRef(false);
     const [expandedReviewId, setExpandedReviewId] = useState<number | null>(null);
-    const lastRequestId = useRef(0);
     const getMyPageReviewList=async (orderItemId?:number)=>{
+        const request:MyPageReviewListRequest={type:type,orderItemId:orderItemId}
+        const response = await axiosInstance.post('/api/order/myPage/review/list',request);
+        const result:MyPageReviewListResponse=response.data;
+        const reviewList=transformMyPageReviewListResponseToMyPageReviewListScreenData(result.myPageReviewList);
+        return reviewList;
+    }
+    const init=async ()=>{
         try{
-            const request:MyPageReviewListRequest={type:type,orderItemId:orderItemId}
-            const response = await axiosInstance.post('/api/order/myPage/review/list',request);
-            const result:MyPageReviewListResponse=response.data;
-            const reviewList=transformMyPageReviewListResponseToMyPageReviewListScreenData(result.myPageReviewList);
-            return reviewList;
+            if(loadingRef.current){return;}
+            loadingRef.current=true;
+            setLoading(true);
+            const reviewList=await getMyPageReviewList();
+            if(reviewList.length<5){
+                setHasMore(false);
+            }
+            setMyPageReviewList(prev=>{
+                lastMyPageReviewIdRef.current=reviewList[reviewList.length-1]?.orderItemId;
+                return({
+                    myPageReviewList:reviewList
+                })
+            });
+            setLoading(false);
+            loadingRef.current=false;
         }catch(error){
+            setLoading(false);
             nav('/errorPage',{ replace: true });
-            return [];
         }
     }
     useEffect(() => {
-        const requestId = ++lastRequestId.current;
         if(type!=='REVIEWABLE'&&type!=='REVIEWED'){
             nav('/errorPage',{ replace: true });
             return ;
         }
-        const loadInitialReviews = async () => {
-            setExpandedReviewId(null);
-            setLoading(true);
-            setHasMore(true);
-            const reviewList=await getMyPageReviewList();               
-            if (requestId === lastRequestId.current) {
-                if(reviewList.length<5){
-                    setHasMore(false);
-                }
-                setMyPageReviewList(prev=>{
-                    lastMyPageReviewIdRef.current=reviewList[reviewList.length-1]?.orderItemId;
-                    return({
-                        myPageReviewList:reviewList
-                    })
-                });
-                setLoading(false);
-            }
-        }
-        loadInitialReviews();
+        setExpandedReviewId(null);
+        init();
       }, [type]);
     const handleTabClick = (tab:string) => {
         nav(`/myPage/review/list/?type=${tab}`);
     };
     const handleAddMyPageReviewList=async ()=>{
-        const requestId = ++lastRequestId.current;
-        setLoading(true);
-        const reviewList=await getMyPageReviewList(lastMyPageReviewIdRef.current);
-        if (requestId === lastRequestId.current) {
+        try{
+            if(loadingRef.current){return;}
+            loadingRef.current=true;
+            setLoading(true);
+            const reviewList=await getMyPageReviewList(lastMyPageReviewIdRef.current);
             if(reviewList.length<5){
                 setHasMore(false);
             }
@@ -79,6 +79,10 @@ const MyPageReviewList: React.FC = () => {
                 })
             })
             setLoading(false);
+            loadingRef.current=false;
+        }catch(error){
+            setLoading(false);
+            nav('/errorPage',{ replace: true });
         }
     }
     const handleToggle = (reviewItem:MyPageReviewItem) => {

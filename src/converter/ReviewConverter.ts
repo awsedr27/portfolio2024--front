@@ -6,7 +6,7 @@ export const transformReviewListResponse = (responseData: ReviewListResponse): R
     return responseData.reviewList.map(item => ({
         reviewId:item.reviewId,
         rating:item.rating,
-        userName:item.userName,
+        nickname:item.nickname,
         comment:item.comment,
         reply:item.reply,
         createDate: new Date(item.createDate)

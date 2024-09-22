@@ -1,17 +1,20 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import styles from './ReviewDetail.module.css'; 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { MyPageReviewDetail } from './ReviewDetailScreenData';
 import { MyPageReviewItem } from '../list/MyPageReviewListScreenData';
 import axiosInstance from '../../../../network/Api';
 import { ReviewDeleteRequest, ReviewSaveRequest, ReviewUpdateRequest } from '../../../../data/review/ReviewRequest';
 import { ValidateReviewSaveRequest, ValidateReviewUpdateRequest } from '../../../../validation/ValidationReview';
+import { useSpinner } from '../../../../context/SpinnerContext';
 const ReviewDetail: React.FC = () => {
     const location = useLocation();
     const nav = useNavigate();
     const imgLocation = process.env.REACT_APP_PRODUCT_IMG_LOCATION;
     const baseUrl = process.env.REACT_APP_API_URL;
     const {reviewItem}: {reviewItem:MyPageReviewItem} = location.state;
+    const {loading,setLoading } = useSpinner();
+    const loadingRef = useRef(false);
     const [reviewDetailScreenData, setReviewDetailScreenData] = useState<MyPageReviewDetail>({
       reviewId:reviewItem.reviewId,reviewComment:reviewItem.reviewComment,reviewRating:reviewItem.reviewRating,reviewReply:reviewItem.reviewReply,reviewUseYn:reviewItem.reviewUseYn});
     useEffect(() => {
@@ -27,11 +30,11 @@ const ReviewDetail: React.FC = () => {
               alert(validationMessage);
               return;
             }
+            if(loadingRef.current){return;}
+            loadingRef.current=true;
+            setLoading(true);
             const response = await axiosInstance.post('/api/review/update', reviewUpdateRequest);
-            if(response.status===200){
-              alert("리뷰가 수정되었습니다");
-              nav('/myPage/review/list?type=reviewable',{ replace: true });
-            }
+            alert("리뷰가 수정되었습니다");
           }else{
             const reviewSaveRequest:ReviewSaveRequest={orderItemId:reviewItem.orderItemId,comment:reviewDetailScreenData.reviewComment||'',rating:reviewDetailScreenData.reviewRating||0}
             const validationMessage=ValidateReviewSaveRequest(reviewSaveRequest);
@@ -39,15 +42,18 @@ const ReviewDetail: React.FC = () => {
               alert(validationMessage);
               return;
             }
+            if(loadingRef.current){return;}
+            loadingRef.current=true;
+            setLoading(true);
             const response = await axiosInstance.post('/api/review/save', reviewSaveRequest);
-            if(response.status===200){
-              alert("리뷰가 등록되었습니다");
-              nav('/myPage/review/list?type=reviewable',{ replace: true });
-            }
+            alert("리뷰가 등록되었습니다");
           }
+          setLoading(false);
+          loadingRef.current=false;
+          nav('/myPage/review/list?type=reviewable',{ replace: true });
         }catch(error){
+          setLoading(false);
           nav('/errorPage',{ replace: true });
-          return;
         }
       }
       const handleStarClick=(index:number)=>{
@@ -78,15 +84,18 @@ const ReviewDetail: React.FC = () => {
           if(reviewDetailScreenData.reviewId==null){
             return;
           }
+          if(loadingRef.current){return;}
+          loadingRef.current=true;
+          setLoading(true);
           const reviewDeleteRequest:ReviewDeleteRequest={reviewId:reviewDetailScreenData.reviewId}
           const response = await axiosInstance.post('/api/review/delete', reviewDeleteRequest);
-          if(response.status===200){
-            alert("리뷰가 삭제되었습니다");
-            nav('/myPage/review/list?type=reviewable',{ replace: true });
-          }
+          alert("리뷰가 삭제되었습니다");
+          setLoading(false);
+          loadingRef.current=false;
+          nav('/myPage/review/list?type=reviewable',{ replace: true });
         }catch(error){
+          setLoading(false);
           nav('/errorPage',{ replace: true });
-          return;
         }
       }
     return(

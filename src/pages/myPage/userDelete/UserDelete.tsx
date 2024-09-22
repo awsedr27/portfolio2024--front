@@ -1,12 +1,14 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import styles from './UserDelete.module.css'; 
 import axiosInstance from '../../../network/Api';
 import { useNavigate } from 'react-router-dom';
+import { useSpinner } from '../../../context/SpinnerContext';
 
 
 const UserDelete: React.FC = () => {
     const [confirmationText, setConfirmationText] = useState('');
-    const [loading, setLoading] = useState(false);
+    const {loading,setLoading } = useSpinner();
+    const loadingRef = useRef(false);
     const nav = useNavigate();
 
     const handleChangeText=(text:string)=>{
@@ -17,24 +19,20 @@ const UserDelete: React.FC = () => {
             if(confirmationText!=='회원탈퇴'){
                 return;
             }
-            if(loading){
-                return;
-            }
             const userConfirmed = window.confirm('정말 회원탈퇴를 하시겠습니까?');
             if(userConfirmed){
+                if(loadingRef.current){return;}
+                loadingRef.current=true;
                 setLoading(true);
                 const response = await axiosInstance.post('/api/user/delete');
-                alert("asdf")
-                if(response.status===200){
-                    localStorage.removeItem('accessToken');
-                    window.location.replace("/login");
-                }
+                localStorage.removeItem('accessToken');
+                setLoading(false);
+                loadingRef.current=false;
+                window.location.replace("/login");
             }
         }catch(error){
-            nav('/errorPage',{ replace: true });
-            return;
-        }finally {
             setLoading(false);
+            nav('/errorPage',{ replace: true });
         }
     }
 return (

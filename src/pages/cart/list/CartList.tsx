@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styles from './CartList.module.css';
 import CartItemComponent from '../../../components/cart/CartItemComponent';
 import axiosInstance from '../../../network/Api';
@@ -11,102 +11,89 @@ import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { useLayoutContext } from '../../../context/LayoutContext';
-
-
+import { useSpinner } from '../../../context/SpinnerContext';
 
 const Cart: React.FC = () => {
   const nav = useNavigate();
+  const {loading,setLoading } = useSpinner();
+  const loadingRef = useRef(false);
   const { setCartListCnt } = useLayoutContext();
-    const [cartListScreenData, setCartListScreenData] = useState<CartListScreenData>({cartList:[],calcuatedAllPrice:0,isAllSelect:false,
-      calcuatedAllDiscountPrice:0,calcuatedPayPrice:0});
+    const [cartListScreenData, setCartListScreenData] = useState<CartListScreenData>({cartList:[],isAllSelect:false});
+
+      const updatedAllPrice = cartListScreenData.cartList.reduce(
+        (total, item) => total + item.price * item.quantity,
+        0
+      );
+      const updatedAllDiscountPrice:number=0;
+      const updatedPayPrice:number=updatedAllPrice-updatedAllDiscountPrice;
 
     useEffect(() => {
         window.scrollTo(0, 0);
-        fetchCartList();
+        init();
       }, []);
       const fetchCartListCount = async () => {
-        try {
           const response = await axiosInstance.post('/api/cart/list/count');
-          setCartListCnt(response.data);
-        } catch (error) {
-          console.error('Failed to fetch cart list count:', error);
-        }
+          return response.data;
       };
-      const fetchCartList = async () => {
-        try {
+      const getCartList = async () => {
           const response = await axiosInstance.post('/api/cart/list');
           const resultData:CartListResponse=response.data;
           const cartList=transformCartListResponse(resultData);
+          return cartList;
+      };
+      const init=async ()=>{
+        try{
+          if(loadingRef.current){return;}
+          loadingRef.current=true;
+          setLoading(true);
+          const cartList=await getCartList();
           setCartListScreenData(prevState => {
-            const updatedCartList = [...cartList];
-            const updatedAllPrice = updatedCartList.reduce(
-              (total, item) => total + item.price * item.quantity,
-              0
-            );
-            const updatedAllDiscountPrice:number=0;
-            const updatedAllDeliveryPrice:number=0;
-            const updatedPayPrice:number=updatedAllPrice-updatedAllDiscountPrice+updatedAllDeliveryPrice;
             return {
               isAllSelect:false,
-              cartList: updatedCartList,
-              calcuatedAllPrice: updatedAllPrice,
-              calcuatedAllDiscountPrice:updatedAllDiscountPrice,
-              calcuatedAllDeliveryPrice:updatedAllDeliveryPrice,
-              calcuatedPayPrice:updatedPayPrice
+              cartList: cartList
             };
           });
-        } catch (error) {
-          console.error('Error fetching cart List:', error);
+          setLoading(false);
+          loadingRef.current=false;
+        }catch(error){
+            setLoading(false);
+            nav('/errorPage',{ replace: true });
         }
-      };
+      }
       const handleCartUpdateQuantityBtnClick = async (productId:number,quantity: number) => {
         try{
           if(quantity<=0){
             return;
           }
+           if(loadingRef.current){return;}
+           loadingRef.current=true;
+          //setLoading(true);
           const cartUpdateRequest:CartUpdateRequest={productId:productId,quantity:quantity};
-
           const response=await axiosInstance.post('/api/cart/update',cartUpdateRequest);
           const resultData:CartUpdateResponse = response.data;
-
           setCartListScreenData(prevData => {
             const updatedCartList = prevData.cartList.map(item =>
               item.productId === productId ? { ...item, quantity: resultData.quantity } : item
             );
-      
-            const updatedAllPrice = updatedCartList.reduce(
-              (total, item) => total + item.price * item.quantity,
-              0
-            );
-            const updatedAllDiscountPrice:number=0;
-            const updatedAllDeliveryPrice:number=0;
-            const updatedPayPrice:number=updatedAllPrice-updatedAllDiscountPrice+updatedAllDeliveryPrice;
-
             return {
               ...prevData,
-              cartList: updatedCartList,
-              calcuatedAllPrice: updatedAllPrice,
-              calcuatedAllDiscountPrice:updatedAllDiscountPrice,
-              calcuatedAllDeliveryPrice:updatedAllDeliveryPrice,
-              calcuatedPayPrice:updatedPayPrice
+              cartList: updatedCartList
             };
           });
+          //setLoading(false);
+           loadingRef.current=false;
         }catch(error){
-          console.log(error)
+          //setLoading(false);
+          nav('/errorPage',{ replace: true });
         }
-    
       };
       const handleCheckboxChange = (productId:number) => {
-        try{
           setCartListScreenData(prevData => ({
             ...prevData,
             cartList: prevData.cartList.map(item =>
               item.productId === productId ? { ...item, checkBox:!item.checkBox} : item
             )
           }));
-        }catch(error){
-          console.log(error)
-        }
       };
       const handleDeleteSelected =async () => {
         try{
@@ -115,11 +102,24 @@ const Cart: React.FC = () => {
             alert('삭제할 상품을 선택해주세요');
             return;
           }
+          if(loadingRef.current){return;}
+          loadingRef.current=true;
+          setLoading(true);
           await axiosInstance.post('/api/cart/list/delete',cartListDeleteRequest);
-          fetchCartList();
-          fetchCartListCount();
+          const cartList=await getCartList();
+          const cartListCount:number=await fetchCartListCount();
+          setCartListScreenData(prev=>{
+            return({
+              isAllSelect:false,
+              cartList:cartList
+            })
+          })
+          setCartListCnt(cartListCount);
+          setLoading(false);
+          loadingRef.current=false;
         }catch(error){
-          console.log(error)
+          setLoading(false);
+          nav('/errorPage',{ replace: true });
         }
       };
       const handleCartBtnClick = (productId:number) => {
@@ -193,15 +193,15 @@ const Cart: React.FC = () => {
       <div className={styles.payContainer}>
         <div className={styles.orderPrice}>
           <p>주문금액</p>
-          <p>{cartListScreenData.calcuatedAllPrice.toLocaleString('ko-KR')}<span> 원</span></p>
+          <p>{updatedAllPrice.toLocaleString('ko-KR')}<span> 원</span></p>
         </div>
         <div className={styles.discountPrice}>
           <p>할인금액</p>
-          <p>-{cartListScreenData.calcuatedAllDiscountPrice.toLocaleString('ko-KR')}<span> 원</span></p>
+          <p>-{updatedAllDiscountPrice.toLocaleString('ko-KR')}<span> 원</span></p>
         </div>
         <div className={styles.payPrice}>
           <h3>최종결제금액</h3>
-          <p>{cartListScreenData.calcuatedPayPrice.toLocaleString('ko-KR')}<span> 원</span></p>
+          <p>{updatedPayPrice.toLocaleString('ko-KR')}<span> 원</span></p>
         </div>
         <div className={styles.buttonGroup}>
           <button className={styles.buyAllButton} onClick={handleBuyAll}>전체상품 구매하기</button>

@@ -26,7 +26,7 @@ const Main: React.FC = () => {
   const { setCartListCnt } = useLayoutContext();
   const fetchProducts = useCallback(async (productListRequest:ProductListRequest) => {
     if(loadingRef.current){
-      return false}
+      return }
     loadingRef.current=true;
     setLoading(true);
     try {
@@ -66,6 +66,10 @@ const Main: React.FC = () => {
 
   const handleCartSaveIconClick = async (productId: number) => {
     try{
+      if(loadingRef.current){
+        return;
+      }
+      loadingRef.current=true;
       setLoading(true);
       const cartSaveRequest:CartSaveRequest={productId:productId};
       const response=await axiosInstance.post('/api/cart/save',cartSaveRequest);
@@ -77,6 +81,7 @@ const Main: React.FC = () => {
       console.log(error)
     }finally {
       setLoading(false);
+      loadingRef.current=false;
   }
   };
   return (

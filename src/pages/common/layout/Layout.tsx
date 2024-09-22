@@ -8,7 +8,7 @@ import styles from './Layout.module.css';
 const Layout: React.FC = () => {
   return (
     <LayoutContextProvider>
-    <div>
+    <div className={styles.topContainer}>
       <Header />
       <main className={styles.mainStyle}>
         <Outlet />

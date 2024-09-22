@@ -1,0 +1,22 @@
+.reviewItem{
+    border-bottom: 1px solid rgb(224, 224, 224);
+    padding-bottom:15px;
+}
+.reviewCreateDateAndNickname{
+    display: flex;
+    justify-content: space-between;
+    margin-top:10px;
+}
+.userIcon{
+    margin-right:5px;
+}
+.reviewTextContainer{
+
+}
+.reviewComment{
+    margin-bottom:15px;
+    margin-top:15px;
+}
+.reviewReply{
+    background-color: rgb(246, 246, 246);
+}

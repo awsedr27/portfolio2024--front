@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 const ErrorPage: React.FC = () => {
   const nav = useNavigate();
   const handleGoToMain=()=>{
-    nav('/', { replace: true });
+    window.location.replace("/");
   }
   return (
     <div className={styles.errorContainer}>

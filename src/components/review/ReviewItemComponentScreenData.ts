@@ -1,7 +1,7 @@
 export interface ReviewItem {
     reviewId:number;
     rating:number;
-    userName:string;
+    nickname:string;
     comment:string;
     reply:string;
     createDate:Date;

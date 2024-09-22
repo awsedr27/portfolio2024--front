@@ -1,6 +1,8 @@
 import React from 'react';
 import { ReviewItem } from './ReviewItemComponentScreenData';
 import styles from './ReviewItemComponent.module.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUser } from '@fortawesome/free-solid-svg-icons';
 
 
 
@@ -18,7 +20,6 @@ const ReviewItemComponent: React.FC<ReviewItemProps> = (props:ReviewItemProps) =
           </span>
         );
       }
-
   return (
     <div className={styles.reviewItem}>
       <div className={styles.headerContainer}>
@@ -27,19 +28,26 @@ const ReviewItemComponent: React.FC<ReviewItemProps> = (props:ReviewItemProps) =
               <Star key={index} filled={index < props.reviewItem.rating} />
           ))}
         </div>
+      </div>
+      <div className={styles.reviewCreateDateAndNickname}>
+        <div className={styles.reviewNickname}>
+        <FontAwesomeIcon className={styles.userIcon} icon={faUser}/>
+
+          {props.reviewItem.nickname}
+        </div>
         <div className={styles.reviewCreateDate}>
           {props.reviewItem.createDate.toLocaleDateString()}
         </div>
       </div>
-        <div className={styles.reviewUserName}>
-          {props.reviewItem.userName}
-        </div>
+      <div className={styles.reviewTextContainer}>
         <div className={styles.reviewComment}>
           {props.reviewItem.comment}
         </div>
+        {(props.reviewItem.reply)&&(
         <div className={styles.reviewReply}>
-          {props.reviewItem.reply}
-        </div>
+          답변 : {props.reviewItem.reply}
+        </div>)}
+      </div>
     </div>
   );
 };

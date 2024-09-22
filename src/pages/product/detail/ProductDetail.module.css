@@ -14,17 +14,23 @@
   .imgContainer{
     flex:1;
     margin-top: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
   .contentContainer{
     flex:1;
     text-align: left;
   }
   
-  .productDetail img {
+  .imgContainer img {
     width: 400px;
     height: 400px;
     border-radius: 8px;
     /* margin-bottom: 20px; */
+  }
+  .imgContainer p{
+
   }
   
   .textContainer h1 {

@@ -1,9 +1,5 @@
 export interface OrderCheckoutScreenData{
     orderList:OrderCheckoutItem[];
-    calcuatedAllPrice:number;
-    calcuatedAllDiscountPrice:number;
-    calcuatedAllDeliveryPrice:number;
-    calcuatedPayPrice:number;
     postcode: string;
     roadAddress: string;
     jibunAddress: string;

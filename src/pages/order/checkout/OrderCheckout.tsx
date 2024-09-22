@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { OrderCheckoutScreenData } from "./OrderCheckoutScreenData";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from './OrderCheckout.module.css'; 
 import axiosInstance from "../../../network/Api";
 import { CartListForCheckoutRequest } from "../../../data/cart/CartRequest";
@@ -9,104 +9,90 @@ import { transformCartListForCheckoutResponse } from "../../../converter/CartCon
 import { OrderItemSaveRequest, OrderSaveRequest } from "../../../data/order/OrderRequest";
 import { transformOrderListToOrderItemSaveRequestList } from "../../../converter/OrderConverter";
 import ValidateOrderSaveRequest from "../../../validation/ValidationOrder";
+import { useSpinner } from "../../../context/SpinnerContext";
 
 const OrderCheckout: React.FC = () => {
     const location = useLocation();
     const nav = useNavigate();
+    const {loading,setLoading } = useSpinner();
+    const loadingRef = useRef(false);
     const orderListParam: number[] = location.state?.orderList || [];
     const imgLocation = process.env.REACT_APP_PRODUCT_IMG_LOCATION;
     const baseUrl = process.env.REACT_APP_API_URL;
     const [orderCheckoutScreenData, setOrderCheckoutScreenData] = useState<OrderCheckoutScreenData>({orderList:[],postcode:"",roadAddress:"",jibunAddress:"",detailAddress:"",
-      calcuatedAllPrice:0,calcuatedPayPrice:0,calcuatedAllDiscountPrice:0,calcuatedAllDeliveryPrice:0
     });
-    const [loading, setLoading] = useState(false);
-    const [buy, setBuy] = useState(false);
+    const [postcodeRoading, setPostcodeRoading] = useState(false);
+
+    let updatedAllPrice = orderCheckoutScreenData.orderList.reduce(
+      (total, item) => total + item.price * item.quantity,
+      0
+    );
+    let updatedAllDiscountPrice:number=0;
+    let updatedAllDeliveryPrice:number=4000;
+    let updatedPayPrice:number=updatedAllPrice-updatedAllDiscountPrice+updatedAllDeliveryPrice;
     const fetchCartData = async () => {
-      try{
         const cartListForCheckoutRequest:CartListForCheckoutRequest={productIdList:orderListParam};
         const response=await axiosInstance.post('api/cart/list/checkout',cartListForCheckoutRequest);
         const resultData:CartListForCheckoutResponse = response.data;
         const orderList=transformCartListForCheckoutResponse(resultData);
+        return orderList;
+
+    }
+    const init=async ()=>{
+      try{
+        if(loadingRef.current){return;}
+        loadingRef.current=true;
+        setLoading(true);
+        const cartData=await fetchCartData();
         setOrderCheckoutScreenData(prev=>{
-          const updatedAllPrice = orderList.reduce(
-            (total, item) => total + item.price * item.quantity,
-            0
-          );
-          const updatedAllDiscountPrice:number=0;
-          const updatedAllDeliveryPrice:number=0;
-          const updatedPayPrice:number=updatedAllPrice-updatedAllDiscountPrice+updatedAllDeliveryPrice;
           return{
             ...prev,
-            orderList:orderList,
+            orderList:cartData,
             calcuatedAllPrice: updatedAllPrice,
             calcuatedAllDiscountPrice:updatedAllDiscountPrice,
             calcuatedAllDeliveryPrice:updatedAllDeliveryPrice,
             calcuatedPayPrice:updatedPayPrice
           }
         })
+        setLoading(false);
+        loadingRef.current=false;
       }catch(error){
+        setLoading(false);
         nav('/errorPage',{ replace: true });
-        return;
-      }
-    }
-    console.log(orderCheckoutScreenData)
-    const orderSave = async () => {
-      try{
-        const orderItemSaveRequest:OrderItemSaveRequest[]=transformOrderListToOrderItemSaveRequestList(orderCheckoutScreenData.orderList);
-        const orderSaveRequest:OrderSaveRequest={orderSaveList:orderItemSaveRequest,postcode:orderCheckoutScreenData.postcode,
-          roadAddress:orderCheckoutScreenData.roadAddress,jibunAddress:orderCheckoutScreenData.jibunAddress,detailAddress:orderCheckoutScreenData.detailAddress}
-        const validationMessage=ValidateOrderSaveRequest(orderSaveRequest);
-        if(validationMessage){
-          alert(validationMessage);
-          return false;
-        }
-        const response=await axiosInstance.post('/api/order/save',orderSaveRequest);
-        if(response.status===200){
-          alert("주문을 완료했습니다");
-        }
-        return true;
-      }catch(error){
-        console.log(error);
-        return false;
       }
     }
     useEffect(() => {
+        init();
         const script = document.createElement('script');
         script.src = '//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js';
         script.async = true;
         script.onload = () => {
-           setLoading(true);
+          setPostcodeRoading(true);
         };
         document.body.appendChild(script);
-        fetchCartData();
         return () => {
           document.body.removeChild(script);
         };
       }, []);
       const handleOpenPostSearch = () => {
-        if (!loading) {
-          console.log('우편주소시스템을 불러오는중입니다...');
-          return;
+        if(!postcodeRoading){
+          alert('우편번호 서비스 불러오는 중... 잠시 기다려주세요');
         }
         try{
           new (window as any).daum.Postcode({
             oncomplete: function (data: any) {
-              const allDeliveryPrice=4000;
                   setOrderCheckoutScreenData(prev=>{
-                    const updatedPayPrice:number=prev.calcuatedAllPrice-prev.calcuatedAllDiscountPrice+allDeliveryPrice;
                     return {
                       ...prev,
                       postcode:data.zonecode,
                       roadAddress:data.roadAddress,
                       jibunAddress:data.jibunAddress,
-                      calcuatedAllDeliveryPrice:allDeliveryPrice,
-                      calcuatedPayPrice:updatedPayPrice
                     }
                   });
             }
           }).open();
         }catch(error){
-          console.log("주소찾기api 오류");
+          alert("우편번호 서비스에 에러발생했습니다, 잠시 후 다시 시도해주세요");
         }
       };
       const handleInputDetailAddress = (event:any) => {
@@ -118,9 +104,26 @@ const OrderCheckout: React.FC = () => {
         });
       }
       const handleBuy=async ()=>{
-        const result=await orderSave();
-        if(result){
-          nav('/', { replace: true });
+        try{
+          const orderItemSaveRequest:OrderItemSaveRequest[]=transformOrderListToOrderItemSaveRequestList(orderCheckoutScreenData.orderList);
+          const orderSaveRequest:OrderSaveRequest={orderSaveList:orderItemSaveRequest,postcode:orderCheckoutScreenData.postcode,
+            roadAddress:orderCheckoutScreenData.roadAddress,jibunAddress:orderCheckoutScreenData.jibunAddress,detailAddress:orderCheckoutScreenData.detailAddress}
+          const validationMessage=ValidateOrderSaveRequest(orderSaveRequest);
+          if(validationMessage){
+            alert(validationMessage);
+            return;
+          }
+          if(loadingRef.current){return;}
+          loadingRef.current=true;
+          setLoading(true);
+          const response=await axiosInstance.post('/api/order/save',orderSaveRequest);
+          alert("주문을 완료했습니다");
+          setLoading(false);
+          loadingRef.current=false;
+          nav('/',{ replace: true });
+        }catch(error){
+          setLoading(false);
+          nav('/errorPage',{ replace: true });
         }
       }
     return(
@@ -128,7 +131,7 @@ const OrderCheckout: React.FC = () => {
             <div className={styles.postContainer}>
                 <h2>배송지 검색</h2>
                 <input type="text" className={styles.postInput} id="postcode" placeholder="우편번호" onClick={handleOpenPostSearch} value={orderCheckoutScreenData.postcode} readOnly></input>
-                <input type="button" className={styles.postInput} value="우편번호 찾기" onClick={handleOpenPostSearch} disabled={!loading}></input><br></br>
+                <input type="button" className={styles.postInput} value="우편번호 찾기" onClick={handleOpenPostSearch} disabled={!postcodeRoading}></input><br></br>
                 <input type="text" className={styles.postInput} id="roadAddress" placeholder="도로명주소" value={orderCheckoutScreenData.roadAddress} readOnly></input>
                 <input type="text" className={styles.postInput} id="jibunAddress" placeholder="지번주소" value={orderCheckoutScreenData.jibunAddress} readOnly></input>
                 <span id="guide" style={{ color: "#999", display: "none" }}></span>
@@ -157,22 +160,22 @@ const OrderCheckout: React.FC = () => {
                 <div className={styles.orderPayContainer}>
                     <div className={styles.orderPrice}>
                     <p>주문금액</p>
-                    <p>{orderCheckoutScreenData.calcuatedAllPrice.toLocaleString('ko-KR')}<span> 원</span></p>
+                    <p>{updatedAllPrice.toLocaleString('ko-KR')}<span> 원</span></p>
                     </div>
                     <div className={styles.discountPrice}>
                     <p>할인금액</p>
-                    <p>-{orderCheckoutScreenData.calcuatedAllDiscountPrice.toLocaleString('ko-KR')}<span> 원</span></p>
+                    <p>-{updatedAllDiscountPrice.toLocaleString('ko-KR')}<span> 원</span></p>
                     </div>
                     <div className={styles.deliveryPrice}>
                     <p>배송비</p>
-                    <p>{orderCheckoutScreenData.calcuatedAllDeliveryPrice.toLocaleString('ko-KR')}<span> 원</span></p>
+                    <p>{updatedAllDeliveryPrice.toLocaleString('ko-KR')}<span> 원</span></p>
                     </div>
                     <div className={styles.payPrice}>
                     <h3>최종결제금액</h3>
-                    <p>{orderCheckoutScreenData.calcuatedPayPrice.toLocaleString('ko-KR')}<span> 원</span></p>
+                    <p>{updatedPayPrice.toLocaleString('ko-KR')}<span> 원</span></p>
                     </div>
                     <div className={styles.buttonGroup}>
-                    <button className={styles.orderButton} onClick={handleBuy} disabled={buy}>주문하기</button>
+                    <button className={styles.orderButton} onClick={handleBuy} disabled={loading}>주문하기</button>
                     </div>
                 </div>
             </div>
