@@ -7,14 +7,18 @@ import { useLayoutContext } from '../../../context/LayoutContext';
 import axiosInstance from '../../../network/Api';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { CategoryItemResponse, CategoryListResponse } from '../../../data/category/CategoryResponse';
+import { useSpinner } from '../../../context/SpinnerContext';
 
 const Header: React.FC = () => {
   const { cartListCnt,setCartListCnt} = useLayoutContext();
   const [text, setText] = useState<string>('');
+  const {loading,setLoading } = useSpinner();
+  const loadingRef = useRef(false);
   const nav = useNavigate();
   const location = useLocation();
   const inputRef = useRef<HTMLInputElement>(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [isopenMyDropDown, setIsopenMyDropDown] = useState(false);
   const [categories, setCategories] = useState<CategoryItemResponse[]>([]);
 
   useEffect(() => {
@@ -32,6 +36,8 @@ const Header: React.FC = () => {
     fetchHeader();
   }, []);
   useEffect(() => {
+    setIsopenMyDropDown(false);
+    setIsOpen(false);
     if (!location.pathname.startsWith('/product/search')) {
       setText('');
     }else{
@@ -55,11 +61,42 @@ const Header: React.FC = () => {
       }
       nav("/product/search?keyword="+encodeURIComponent(text));
   }
-  const toggleDropdown = () => setIsOpen(!isOpen);
+  const toggleDropdown = () => {
+    if(isopenMyDropDown){
+      setIsopenMyDropDown(false);
+    }
+    setIsOpen(!isOpen);
+  }
+
+  const toggleMyDropdown = () => {
+    if(isOpen){
+      setIsOpen(false);
+    }
+    setIsopenMyDropDown(!isopenMyDropDown);
+  }
 
   const handleCategorySelect = (category:string) => {
     setIsOpen(false);
   };
+  const handleLogOut=async ()=>{
+    try{
+      if(loadingRef.current){
+        return }
+      loadingRef.current=true;
+      setLoading(true);
+      const logout = await axiosInstance.post('/api/user/logout',null,{withCredentials:true});
+      localStorage.removeItem('accessToken');
+      loadingRef.current = false;
+      setLoading(false);
+      nav("/login");
+
+     // window.location.replace("/login");
+    }catch(error){
+      console.log('로그아웃 실패');
+      loadingRef.current = false;
+      setLoading(false);
+    }
+  }
   return (
     <header className={styles.header}>
       <div className={styles.logo}>
@@ -75,14 +112,12 @@ const Header: React.FC = () => {
               <ul className={styles.dropdownMenu}>
                 {categories.map((category, index) => (
                   <li key={index} onClick={() => handleCategorySelect(category.name)}>
-                    <Link to={`/product/category/${category.categoryId}`}>{category.name}</Link>
+                    <Link className={styles.navLinksText} to={`/product/category/${category.categoryId}`}>{category.name}</Link>
                   </li>
                 ))}
               </ul>
             )}
           </li>
-          {/* <li><Link to="/product/category/3">Top50</Link></li>
-          <li><Link to="/product/category/2">신제품</Link></li> */}
         </ul>
         <div className={styles.searchBar}>
           <form onSubmit={handleSearch}>
@@ -97,9 +132,19 @@ const Header: React.FC = () => {
           </Link>
         </div>
         <div className={styles.user}>
-          <Link to="/myPage">
-            <FontAwesomeIcon icon={faUser}/>
-          </Link>
+              <button className={styles.userIconButton} onClick={toggleMyDropdown}>
+                <FontAwesomeIcon icon={faUser}/>
+              </button>
+              {isopenMyDropDown && (
+                <ul className={styles.myDropDownMenu}>
+                    <li>
+                      <Link to={`/myPage`}>마이페이지</Link>
+                    </li>
+                    <li>
+                      <button onClick={handleLogOut}>로그아웃</button>
+                    </li>
+                </ul>
+              )}
         </div>
 
       </nav>

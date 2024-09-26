@@ -22,5 +22,6 @@ export interface OrderCancelRequest{
   orderId:number;
 }
 export interface OrderItemCancelRequest{
+  orderId:number;
   orderItemId:number;
 }

@@ -10,12 +10,14 @@ import { OrderItemSaveRequest, OrderSaveRequest } from "../../../data/order/Orde
 import { transformOrderListToOrderItemSaveRequestList } from "../../../converter/OrderConverter";
 import ValidateOrderSaveRequest from "../../../validation/ValidationOrder";
 import { useSpinner } from "../../../context/SpinnerContext";
+import { useLayoutContext } from "../../../context/LayoutContext";
 
 const OrderCheckout: React.FC = () => {
     const location = useLocation();
     const nav = useNavigate();
     const {loading,setLoading } = useSpinner();
     const loadingRef = useRef(false);
+    const { setCartListCnt } = useLayoutContext();
     const orderListParam: number[] = location.state?.orderList || [];
     const imgLocation = process.env.REACT_APP_PRODUCT_IMG_LOCATION;
     const baseUrl = process.env.REACT_APP_API_URL;
@@ -117,13 +119,21 @@ const OrderCheckout: React.FC = () => {
           loadingRef.current=true;
           setLoading(true);
           const response=await axiosInstance.post('/api/order/save',orderSaveRequest);
+          const cartCnt = await axiosInstance.post('/api/cart/list/count');
           alert("주문을 완료했습니다");
+          setCartListCnt(cartCnt.data);
           setLoading(false);
           loadingRef.current=false;
           nav('/',{ replace: true });
-        }catch(error){
+        }catch(error:any){
           setLoading(false);
-          nav('/errorPage',{ replace: true });
+          if(error?.response?.status===400){
+            alert(error.response.data);
+            nav('/',{ replace: true });
+          }else{
+            console.log(error);
+            nav('/errorPage',{ replace: true });
+          }
         }
       }
     return(

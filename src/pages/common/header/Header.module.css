@@ -24,7 +24,9 @@
   text-decoration: none;
 }
 
-.navbar {
+
+
+ .navbar {
   display: flex;
   align-items: center;
 }
@@ -32,26 +34,48 @@
 .navLinks {
   display: flex;
   list-style: none;
+  padding: 0px;
 }
 
-.navLinks li {
-  display: inline;
-  width:100px
-}
-
-.navLinks a {
+.navLinksText{
   color: #fff;
   text-decoration: none;
   font-size: 1rem;
   transition: background-color 0.3s ease;
 }
-
-.navLinks a:hover,
-.navLinks a.active {
+.navLinksText:hover {
   background-color: #555;
   border-radius: 4px;
 }
-
+.dropdown {
+  position: relative;
+  margin-right: 15px;
+}
+.dropdownButton{
+  background-color: #333;
+  color: #fff;
+  text-decoration: none;
+  border:none;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+  cursor: pointer;
+}
+.dropdownMenu {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  background-color: #333;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+  padding: 0;
+  margin: 0;
+  width: max-content;
+  margin-top: 10px;
+  list-style: none;
+}
+.dropdownMenu li {
+  padding: 12px 16px;
+}
 .searchBar {
   display: flex;
   align-items: center;
@@ -87,16 +111,7 @@
   margin-right: 15px;
   margin-left: 15px;
 }
-.user {
-  display: flex;
-  align-items: center;
-  position: relative;
-  margin-right: 15px;
-  margin-left: 15px;
-}
-
-.cart a ,
-.user a{
+.cart a{
   color: #fff;
   text-decoration: none;
   font-size: 1.2rem;
@@ -115,30 +130,48 @@
 .inActive{
   display: none;
 }
-
-
-.dropdown {
+.user {
+  display: flex;
+  align-items: center;
   position: relative;
+  margin-right: 15px;
+  margin-left: 15px;
 }
-.dropdownButton{
+.userIconButton{
   background-color: #333;
   color: #fff;
   text-decoration: none;
-  border:none;
+  border: none;
   font-size: 1rem;
-  transition: background-color 0.3s ease;
+  cursor: pointer;
 }
-.dropdownMenu {
+.myDropDownMenu{
   position: absolute;
+  top: 100%;
+  right: 0px;
   display: flex;
   flex-direction: column;
   background-color: #333;
-  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  padding: 0px;
+  text-align: center;
+  width: max-content;
   z-index: 1;
-  padding: 0;
-  margin: 0;
+  list-style: none;
 }
-.dropdownMenu li {
+.myDropDownMenu li{
   padding: 12px 16px;
-  cursor: pointer;
 }
+.myDropDownMenu li a{
+  color: #fff;
+  text-decoration: none;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+.myDropDownMenu li button{
+  border:none;
+  background-color: #333;
+  color: #fff;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+  cursor: pointer;
+} 

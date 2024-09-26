@@ -127,14 +127,14 @@ const OrderCheck: React.FC = () => {
             nav('/errorPage',{ replace: true });
         }
     }
-    const handleOrderItemCancel=async (orderItemId:number)=>{
+    const handleOrderItemCancel=async (orderId:number,orderItemId:number)=>{
         try{
             const userConfirmed = window.confirm('주문상품을 개별취소하시겠습니까?');
             if (userConfirmed) {
                 if(loadingRef.current){return;}
                 loadingRef.current=true;
                 setLoading(true);
-                const orderItemCancelRequest:OrderItemCancelRequest={orderItemId:orderItemId};
+                const orderItemCancelRequest:OrderItemCancelRequest={orderId:orderId,orderItemId:orderItemId};
                 const response = await axiosInstance.post('/api/order/orderItem/cancel',orderItemCancelRequest);
                 alert("주문상품을 개별취소했습니다");
                 setLoading(false);
@@ -247,7 +247,7 @@ const OrderCheck: React.FC = () => {
                                             <div className={styles.orderItemQuantity}>x {orderItem.quantity}</div>
                                             <div className={styles.orderItemStatus}>{changeStatusText(orderItem.status)}</div>
                                             <div className={styles.orderItemCancelBtn}>
-                                                {(orderItem.status==='PENDING')?(<button onClick={()=>handleOrderItemCancel(orderItem.orderItemId)}>개별취소</button>):(<span>취소불가</span>)}
+                                                {(orderItem.status==='PENDING')?(<button onClick={()=>handleOrderItemCancel(order.orderId,orderItem.orderItemId)}>개별취소</button>):(<span>취소불가</span>)}
                                             </div>
                                         </div>
                                     ))}

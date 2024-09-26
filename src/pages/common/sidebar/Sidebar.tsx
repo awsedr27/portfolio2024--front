@@ -16,7 +16,10 @@ const Sidebar: React.FC = () => {
       </div>
       <div className={styles.sidebarItemContainer}>
         <ul>
-          <li><Link to="/myPage/help"><h3>고객센터</h3></Link></li>
+          <li>
+          <h3>고객센터 문의</h3>
+          <p>awsedr0527@daum.net</p>
+          </li>
         </ul>
       </div>
     </nav>

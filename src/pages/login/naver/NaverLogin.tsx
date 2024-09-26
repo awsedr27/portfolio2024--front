@@ -32,7 +32,7 @@ const NaverLogin = () => {
                       }
                 } catch (error:any) {
                     console.log(error);
-                    if(error.response.status===400){
+                    if(error?.response?.status===400){
                         alert(error.response.data);
                     }else{
                         alert('로그인에 실패했습니다. 잠시 후 다시 시도해주세요!');

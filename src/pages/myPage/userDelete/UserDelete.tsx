@@ -24,7 +24,7 @@ const UserDelete: React.FC = () => {
                 if(loadingRef.current){return;}
                 loadingRef.current=true;
                 setLoading(true);
-                const response = await axiosInstance.post('/api/user/delete');
+                const response = await axiosInstance.post('/api/user/delete',{}, { withCredentials: true });
                 localStorage.removeItem('accessToken');
                 setLoading(false);
                 loadingRef.current=false;
