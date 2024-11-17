@@ -35,3 +35,7 @@
 ![alt text](/readme_img/슬라이드36.jpg)
 #
 ![alt text](/readme_img/슬라이드37.jpg)
+#
+![alt text](/readme_img/슬라이드54.jpg)
+#
+![alt text](/readme_img/슬라이드55.jpg)
